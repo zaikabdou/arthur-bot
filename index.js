@@ -89,7 +89,7 @@ const msgRetryCounterMap = new Map()
 const msgRetryCounterCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
 const userDevicesCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
 const { version } = await fetchLatestBaileysVersion()
-let phoneNumber = process.env.PHONENUMBER || global.botNumber
+let phoneNumber = global.botNumber
 const methodCodeQR = process.argv.includes("qr")
 const methodCode = !!phoneNumber || process.argv.includes("code")
 const MethodMobile = process.argv.includes("mobile")
@@ -98,16 +98,17 @@ const qrOption = chalk.blueBright
 const textOption = chalk.cyan
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
-
-// التعديل: جعل الخيار ثابتًا 2 (دخول باستخدام كود نصي/رقم)
-let opcion = '2'
-
+let opcion
 if (methodCodeQR) {
-  // لو تشغّل السكربت مع --qr، هذا السطر يبقى ولكن تم فرض opcion='2' أعلاه حسب طلبك
-  // يمكنك إلغاء السطر التالي لو أردت أن يكون '2' دائماً حتى مع --qr
-  // opcion = '1'
+opcion = '1'
 }
-
+if (!methodCodeQR && !methodCode && !fs.existsSync(`./${sessions}/creds.json`)) {
+do {
+opcion = await question(colors("Seleccione una opción:\n") + qrOption("1. Con código QR\n") + textOption("2. Con código de texto de 8 dígitos\n--> "))
+if (!/^[1-2]$/.test(opcion)) {
+console.log(chalk.bold.redBright(`No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`))
+}} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${sessions}/creds.json`))
+}
 console.info = () => {}
 const connectionOptions = {
 logger: pino({ level: 'silent' }),
@@ -298,7 +299,7 @@ try {
 const module = (await import(`${global.__filename(dir)}?update=${Date.now()}`))
 global.plugins[filename] = module.default || module
 } catch (e) {
-conn.logger.error(`error require plugin '${filename}\n${format(e)}`)
+conn.logger.error(`error require plugin '${filename}\n${format(e)}'`)
 } finally {
 global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)))
 }}}}
