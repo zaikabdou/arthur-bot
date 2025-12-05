@@ -39,7 +39,7 @@ let handler = async (m, { conn }) => {
     await conn.sendMessage(m.chat, { react: { text: emojiReaction, key: m.key } });
 
     await conn.sendMessage(m.chat, { 
-      image: { url: 'https://files.catbox.moe/vkasct.jpg' },
+      image: { url: 'https://n.uguu.se/vXwgUThF.jpg' },
       caption: message,
       mentions: [m.sender]
     });
