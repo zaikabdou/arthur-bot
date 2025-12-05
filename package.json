@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/The-King-Destroy/YukiBot-MD.git"
+    "url": "git+https://github.com/YourUsername/YukiBot-MD.git"
   },
-  "author": "The-King-Destroy",
+  "author": "YourName",
   "license": "MIT-License",
   "bugs": {
-    "url": "https://github.com/The-King-Destroy/YukiBot-MD/issues"
+    "url": "https://github.com/YourUsername/YukiBot-MD/issues"
   },
-  "homepage": "https://github.com/The-King-Destroy/YukiBot-MD#readme",
+  "homepage": "https://github.com/YourUsername/YukiBot-MD#readme",
   "dependencies": {
     "@bochilteam/scraper": "^5.0.1",
     "@hapi/boom": "^10.0.1",
