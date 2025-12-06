@@ -14,13 +14,13 @@ async function handler(m, { conn, groupMetadata }) {
     } while (b === a);
 
     // رابط الصورة الذي تريده
-    const fgytSrdf = 'https://files.catbox.moe/9qxiwh.jpg';
+    const fgytSrdf = 'https://files.catbox.moe/o8mvb6.jpg';
 
     // إرسال الصورة مع الكابشن
     await conn.sendFile(m.chat, fgytSrdf, 'image.jpg', 
     `*🧬 اعــلان زواج 🧬*
-*❯💗 ╎الــعــࢪﯾـس : ${toM(a)}*
-*❯🥹 ╎الــعـࢪوسه : ${toM(b)}*
+*❯💗 ╎الــعــࢪﯾـس : ${toM(a)}.*
+*❯🥹 ╎الــعـࢪوسه : ${toM(b)}.*
 *الف مبروك* 🎉🎉
 > "كل واحد يوزع حلويات ويشيل معاه البوفيه 😂😂`, 
     m, false, { mentions: [a, b] });

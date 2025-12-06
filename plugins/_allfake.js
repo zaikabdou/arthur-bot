@@ -8,7 +8,7 @@ const { generateWAMessageFromContent, prepareWAMessageMedia, proto } = pkg
 var handler = m => m
 handler.all = async function (m) { 
 global.canalIdM = ["120363421920252451@newsletter", "120363421920252451@newsletter"]
-global.canalNombreM = [" 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡", "WELCOME TO CHANNEL 🌹"]
+global.canalNombreM = ["ᥫ᭡ 𝙰𝚁𝚃𝙷𝚄𝚁 𝑾𝒂𝑩𝒐𝒕 - 𝑶𝒇𝒇𝒊𝒄𝒊𝒂𝒍 𝑪𝒉𝒂𝒏𝒏𝒆𝒍 ᯓᡣ𐭩", "ᥫ᭡ 𝙰𝚁𝚃𝙷𝚄𝚁 𝑾𝒂𝑩𝒐𝒕 - 𝑶𝒇𝒇𝒊𝒄𝒊𝒂𝒍 𝑪𝒉𝒂𝒏𝒏𝒆𝒍 ᯓᡣ𐭩"]
 global.channelRD = await getRandomChannel()
 
 global.d = new Date(new Date + 3600000)
@@ -19,11 +19,10 @@ global.mes = d.toLocaleDateString('es', {month: 'long'})
 global.año = d.toLocaleDateString('es', {year: 'numeric'})
 global.tiempo = d.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})
 
-// روابط ملكية عبدو ⚡
 var canal = 'https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f'  
-var comunidad = 'https://chat.whatsapp.com/CvWNDXXjw1J8K7y92bPycz?mode=hqrt1'
-var git = 'https://github.com/zaikabdou1'
-var github = '' // ضع مستودعك لاحقًا إذا أردت
+var comunidad = 'https://chat.whatsapp.com/CvWNDXXjw1J8K7y92bPycz'
+var git = 'https://github.com/zaikabdou'
+var github = '.' 
 var correo = 'abdozaik620@gmail.com'
 global.redes = [canal, comunidad, git, github, correo].getRandom()
 

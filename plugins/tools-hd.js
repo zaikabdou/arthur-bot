@@ -22,7 +22,7 @@ const fallback = Array.isArray(err.errors) ? err.errors.map(e => `• ${e?.engin
 await conn.reply(m.chat, `⚠︎ No se pudo mejorar la imagen\n> Usa ${usedPrefix}report para informarlo\n\n${fallback}`, m)
 }}
 
-handler.command = ['hd', 'تحسين', 'جودة']
+handler.command = ['hd', 'FHD', 'ارثر']
 handler.help = ['hd']
 handler.tags = ['tools']
 

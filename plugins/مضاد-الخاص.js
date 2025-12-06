@@ -31,7 +31,7 @@ export async function before(m, { conn }) {
         `*┊🌩┊:•⪼ تـفـضل لـي الانـضمـام الـى مـجـموعـه الـبـوت 👑🌹*\n` +
         `*_مـمـنوع الاسـتـخـدام خـاص_\n` +
         `*_مجموعتي علا الواتساب لي يشتغل البوت_*\n` +
-        `https://chat.whatsapp.com/GD0B2iL7QZU53PCldoTBBr?mode=hqrt2`,
+        `https://chat.whatsapp.com/CvWNDXXjw1J8K7y92bPycz`,
         false,
         { mentions: [m.sender] }
       );

@@ -29,7 +29,7 @@ const handler = async (m, { text, usedPrefix, command }) => {
       // إرسال الصورة مع الرسالة النصية
       await conn.sendFile(
         m.chat,
-        'https://files.catbox.moe/9qxiwh.jpg', // رابط الصورة
+        'https://files.catbox.moe/o8mvb6.jpg, // رابط الصورة
         'image.jpg', // اسم الملف
         data.char, // نص الرسالة
         m,
