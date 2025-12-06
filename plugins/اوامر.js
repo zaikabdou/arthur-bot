@@ -14,8 +14,8 @@ const handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, { react: { text: '📂', key: m.key } })
 
   const images = [
-    'https://d.uguu.se/maHFoYzu.jpg',
-    'https://n.uguu.se/fWxempdn.jpg'
+    'https://files.catbox.moe/ziws8j.jpg',
+    'https://files.catbox.moe/57nt4f.jpg'
   ]
   const randomImage = images[Math.floor(Math.random() * images.length)]
   const messa = await prepareWAMessageMedia({ image: { url: randomImage } }, { upload: conn.waUploadToServer })
