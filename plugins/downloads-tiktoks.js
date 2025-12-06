@@ -22,7 +22,7 @@ await conn.sendMessage(m.chat, { video: { url: play }, caption }, { quoted: m })
 const res = await axios({ method: 'POST', url: 'https://tikwm.com/api/feed/search', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Cookie': 'current_language=en', 'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' }, data: { keywords: text, count: 20, cursor: 0, HD: 1 }})
 const results = res.data?.data?.videos?.filter(v => v.play) || []
 if (results.length < 2) return conn.reply(m.chat, 'ꕥ مطلوب على الأقل نتيجتين صالحتين مع محتوى.', m)
-const medias = results.slice(0, 10).map(v => ({ type: 'video', data: { url: v.play }, caption: createSearchCaption(v) }))
+const medias = results.slice(0, 5).map(v => ({ type: 'video', data: { url: v.play }, caption: createSearchCaption(v) }))
 await conn.sendSylphy(m.chat, medias, { quoted: m })
 }
 await m.react('✔️')
@@ -30,11 +30,18 @@ await m.react('✔️')
 await m.react('✖️')
 await conn.reply(m.chat, `⚠︎ حدثت مشكلة.\n> استخدم *${usedPrefix}report* للإبلاغ عنها.\n\n${e.message}`, m)
 }}
-function createCaption(title, author, duration, created_at = '') {
-  return `❀ *العنوان ›* \`${title || 'غير متوفر'}\`\n> ☕︎ المؤلف › *${author?.nickname || author?.unique_id || 'غير متوفر'}*\n> ✰ المدة › *${duration || 'غير متوفر'} ثانية*${created_at ? `\n> ☁︎ تم الإنشاء » ${created_at}` : ''}\n> 𝅘𝅥𝅮 الموسيقى » [${author?.nickname || author?.unique_id || 'غير متوفر'}] الصوت الأصلي - ${author?.unique_id || 'غير معروف'}`
+function createCaption(title, author, duration, mSender) {
+  return `❀ *العنوان ›* ${title || mSender?.text || 'غير متوفر'}\n` +
+         `> ☕︎ المؤلف › *${mSender?.name || author?.nickname || author?.unique_id || 'غير متوفر'}*\n` +
+         `> ✧︎ المدة › ${duration || 'غير متوفر'}\n` +
+         `© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄`;
 }
-function createSearchCaption(data) {
-  return `❀ العنوان › ${data.title || 'غير متوفر'}\n\n☕︎ المؤلف › ${data.author?.nickname || 'غير معروف'} ${data.author?.unique_id ? `@${data.author.unique_id}` : ''}\n✧︎ المدة › ${data.duration || 'غير متوفر'}\n𝅘𝅥𝅮 الموسيقى › ${data.music?.title || `[${data.author?.nickname || 'غير متوفر'}] الصوت الأصلي - ${data.author?.unique_id || 'غير معروف'}`}`
+
+function createSearchCaption(data, mSender) {
+  return `❀ *العنوان ›* ${data.title || mSender?.text || 'غير متوفر'}\n` +
+         `> ☕︎ المؤلف › *${mSender?.name || data.author?.nickname || 'غير معروف'} ${data.author?.unique_id ? `@${data.author.unique_id}` : ''}*\n` +
+         `> ✧︎ المدة › ${data.duration || 'غير متوفر'}\n` +
+         `© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄`;
 }
 
 handler.help = ['tiktok', 'tt']
