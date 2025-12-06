@@ -33,7 +33,7 @@ handler.all = async function (m) {
   }
 
   if (/^حمار|يا غبي|اهبل|غبي$/i.test(m.text)) { 
-    conn.reply(m.chat, `*َمـش فـي اغـبـى عـنـك فـي الـعالـم🥷ٌٍََََََُِّْ*`, fake);
+    conn.reply(m.chat, `*َمفيش اغـبـى منك فـي الـعالـم🥷ٌٍََََََُِّْ*`, fake);
   }
 
   if (/^بوت$/i.test(m.text)) { 

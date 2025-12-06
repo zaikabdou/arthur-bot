@@ -16,9 +16,10 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   const privateChats = chats.filter(([id]) => !id.endsWith('@g.us'));
 
   const cpus = _cpus().map(cpu => {
-    cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0);
+    cpu.total = Object.values(cpu.times).reduce((last, time) => last + time, 0);
     return cpu;
   });
+
   const cpu = cpus.reduce((last, cpu, _, { length }) => {
     last.total += cpu.total;
     last.speed += cpu.speed / length;
@@ -45,14 +46,20 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   let neww = performance.now();
   let elapsedTime = neww - old;
 
-  let target = m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender;
+  let target = m.quoted
+    ? m.quoted.sender
+    : (m.mentionedJid && m.mentionedJid[0])
+    ? m.mentionedJid[0]
+    : m.fromMe
+    ? conn.user.jid
+    : m.sender;
 
   if (!(target in global.db.data.users)) throw `المستخدم غير موجود في قاعدة البيانات`;
 
   let profilePic = await conn.profilePictureUrl(target, 'image').catch(_ => './logo.jpg');
   let user = global.db.data.users[target];
 
-  let botname = "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃;
+  let botname = "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃";
 
   let infoMessage = `
 ╭────〈 ${botname} 〉───
@@ -79,7 +86,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
   conn.sendFile(m.chat, profilePic, 'perfil.jpg', infoMessage, m, false, { mentions: [target] });
   m.react('✅');
-}
+};
 
 handler.help = ['معلومات'];
 handler.tags = ['رئيسي'];
