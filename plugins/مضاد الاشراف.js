@@ -32,7 +32,7 @@ export default handler;
 conn.ev.on('group-participants.update', async (update) => {
   let { id, participants, action } = update;
   let botNumber = conn.user.jid; // رقم البوت
-  let developerNumber = '213540419314@s.whatsapp.net'; // رقم المطور بصيغة JID
+  let developerNumber = '213551217759@s.whatsapp.net'; // رقم المطور بصيغة JID
 
   if (!antiAdminChange[id]) return; // إذا كان النظام معطلاً في هذه المجموعة، لا تفعل شيئًا
 

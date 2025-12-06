@@ -79,7 +79,7 @@ const handler = async (m, { conn, text }) => {
   try {
     // التأكد من أن المستخدم هو المطور لتنظيف قاعدة البيانات
     if (text.toLowerCase() === 'داتا') {
-      if (m.sender !== global.owner[0][0] + "213540419314@s.whatsapp.net") {
+      if (m.sender !== global.owner[0][0] + "213551217759@s.whatsapp.net") {
         return conn.sendMessage(m.chat, { text: '*❌ هذه العملية متاحة فقط للمطور!*' }, { quoted: m });
       }
 

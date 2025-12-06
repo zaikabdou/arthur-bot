@@ -16,7 +16,7 @@ export default {
                 "VERSION:3.0\n" +
                 "FN: 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃\n" +
                 "ORG: 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃\n" +
-                "TEL;type=CELL;waid=213540419314:+213 540419314\n" +
+                "TEL;type=CELL;waid=213551217759:+213 551217759\n" +
                 "END:VCARD";
 
             // Fake quoted contact
@@ -58,7 +58,7 @@ export default {
                         body: "جرب اللعب؟ جهّز نفسك للجحيم 🔥",
                         mediaType: 1,
                         thumbnail: imageBuffer,
-                        sourceUrl: "wa.me/213540419314?text=هلا+يا+حب+♥️",
+                        sourceUrl: "wa.me/213551217759?text=هلا+يا+حب+♥️",
                         showAdAttribution: true
                     }
                 }

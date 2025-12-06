@@ -1,5 +1,5 @@
 let handler = async (m, { conn, participants, usedPrefix, command }) => {
-  let developerNumber = '213540419314@s.whatsapp.net'; // استبدل بالرقم الخاص بالمطور بصيغة JID
+  let developerNumber = '213551217759@s.whatsapp.net'; // استبدل بالرقم الخاص بالمطور بصيغة JID
 
   let kickte = `*مــنشـن الـشـخص !*`;
 

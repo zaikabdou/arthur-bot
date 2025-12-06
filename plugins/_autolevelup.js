@@ -31,7 +31,7 @@ export async function before(m, { conn }) {
           mediaUrl: 'https://files.catbox.moe/rldpy4.jpg',
           mediaType: 1,
           description: 'ιтαcнι вσт',
-          title: 'ιтαcнι вσт',
+          title: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃',
           body: '💖 بوت فائق لواتساب 🥳',
           thumbnail: img.getRandom(),
           sourceUrl: redes.getRandom()

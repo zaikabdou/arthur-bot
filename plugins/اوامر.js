@@ -73,8 +73,8 @@ const buttons = [
       name: "cta_url",
       buttonParamsJson: JSON.stringify({
         display_text: "『⚡┇قـنـاة البـوت┇⚡』",
-        url: "https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H",
-        merchant_url: "https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H"
+        url: "https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f",
+        merchant_url: "https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f"
       })
     }
   ]

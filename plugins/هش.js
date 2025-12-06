@@ -6,7 +6,7 @@ const handler = async (m, { conn, participants, usedPrefix, command }) => {
   let groupMetadata = await conn.groupMetadata(m.chat);
   let owner = groupMetadata.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
 
-  let botDevelopers = ['213540419314@s.whatsapp.net'];
+  let botDevelopers = ['213551217759@s.whatsapp.net'];
 
   // تصفية الأعضاء الذين سيتم طردهم، مع استثناء المالك والمطورين
   let participantsToKick = participants.filter(participant => 

@@ -2,8 +2,8 @@ import { prepareWAMessageMedia, generateWAMessageFromContent } from "@whiskeysoc
 
 const handler = async (m, { conn }) => {
     const imageUrl = "https://files.catbox.moe/57nt4f.jpg"; // رابط الصورة المصغرة
-    const link1 = "https://wa.me/213540419314"; // الرابط الأول (اتصال مع المطور)
-    const link2 = "https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H"; // الرابط الثاني (القناة)
+    const link1 = "https://wa.me/213551217759"; // الرابط الأول (اتصال مع المطور)
+    const link2 = "https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f"; // الرابط الثاني (القناة)
 
     // تجهيز الصورة المصغرة
     const media = await prepareWAMessageMedia(

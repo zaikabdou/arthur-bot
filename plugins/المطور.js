@@ -34,7 +34,7 @@ N:;𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃;;;
 FN:𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃
 ORG:𝙰𝚁𝚃𝙷𝚄𝚁 𝚃𝙴𝙰𝙼
 TITLE:
-item1.TEL;waid=213540419314:+213 540419314
+item1.TEL;waid=213551217759:+213 551217759
 item1.X-ABLabel:𝙰𝚁𝚃𝙷𝚄𝚁 𝚂𝚄𝙿𝙿𝙾𝚁𝚃
 X-WA-BIZ-DESCRIPTION:Official 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 Verified Service
 X-WA-BIZ-NAME: 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃
@@ -55,7 +55,7 @@ END:VCARD`
           body: "عــبــدو❄️👑",
           mediaType: 1,
           thumbnailUrl: "https://qu.ax/bHS3c",
-          sourceUrl: "https://wa.me/213540419314",
+          sourceUrl: "https://wa.me/213551217759",
           showAdAttribution: true,
           renderLargerThumbnail: true
         }
@@ -79,7 +79,7 @@ END:VCARD`
                   name: 'cta_url',
                   buttonParamsJson: JSON.stringify({
                     display_text: '≺🩸╎الــمـطـور ╎🩸≺',
-                    url: 'https://wa.me/213540419314'
+                    url: 'https://wa.me/213551217759'
                   })
                 }
               ]

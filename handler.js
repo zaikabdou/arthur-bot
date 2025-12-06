@@ -254,12 +254,12 @@ const botId = this.user.jid
 const primaryBotId = chat.primaryBot
 if (name !== "group-banchat.js" && chat?.isBanned && !isROwner) {
 if (!primaryBotId || primaryBotId === botId) {
-const aviso = `ꕥ El bot *${botname}* está desactivado en este grupo\n\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`.trim()
+const aviso = botDisabled: `『✦』 ꕥ The bot *${botname}* is currently disabled in this group 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.\n\n> ✦ A *group admin* can activate it using the command:\n> » *${usedPrefix}bot on* 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡`.trim()
 await m.reply(aviso)
 return
 }}
 if (m.text && user.banned && !isROwner) {
-const mensaje = `ꕥ Estas baneado/a, no puedes usar comandos en este bot!\n\n> ● *Razón ›* ${user.bannedReason}\n\n> ● Si este Bot es cuenta oficial y tienes evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`.trim()
+const mensaje = banned: `『✦』ꕥ You are banned and cannot use commands in this bot 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.\n\n> ● *Reason ›* ${user.bannedReason}\n\n> ● If this is an official account and you believe this is a mistake, you can present your case to a moderator 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`.trim()
 if (!primaryBotId || primaryBotId === botId) {
 m.reply(mensaje)
 return
@@ -359,15 +359,15 @@ console.log(m.message)
 
 global.dfail = (type, m, conn) => {
 const msg = {
-rowner: `『✦』El comando *${comando}* solo puede ser usado por los creadores del bot.`, 
-owner: `『✦』El comando *${comando}* solo puede ser usado por los desarrolladores del bot.`, 
-mods: `『✦』El comando *${comando}* solo puede ser usado por los moderadores del bot.`, 
-premium: `『✦』El comando *${comando}* solo puede ser usado por los usuarios premium.`, 
-group: `『✦』El comando *${comando}* solo puede ser usado en grupos.`,
-private: `『✦』El comando *${comando}* solo puede ser usado al chat privado del bot.`,
-admin: `『✦』El comando *${comando}* solo puede ser usado por los administradores del grupo.`, 
-botAdmin: `『✦』Para ejecutar el comando *${comando}* debo ser administrador del grupo.`,
-restrict: `『✦』Esta caracteristica está desactivada.`
+rowner: `『✦』The command *${comando}* can only be used by 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+owner: `『✦』The command *${comando}* is reserved for 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+mods: `『✦』The command *${comando}* can only be used by moderators 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+premium: `『✦』The command *${comando}* is only for premium users 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+group: `『✦』The command *${comando}* can only be used in groups 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+private: `『✦』The command *${comando}* can only be used in private chat 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+admin: `『✦』The command *${comando}* is for group admins only 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+botAdmin: `『✦』I need to be a group admin to run *${comando}* 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`,
+restrict: `『✦』This feature is currently disabled 𝙰𝚁𝚃𝙷𝚄𝚁 ⚡.`
 }[type]
 if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))
 }

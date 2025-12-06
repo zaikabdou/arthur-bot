@@ -5,7 +5,7 @@ import path from 'path'
 
 // ❄️ الأرقام المسموح لها بتنفيذ الأمر
 const allowedNumbers = [
-  '213540419314@s.whatsapp.net',
+  '213551217759@s.whatsapp.net',
   '213773231685@s.whatsapp.net'
 ]
 

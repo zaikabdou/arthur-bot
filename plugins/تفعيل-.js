@@ -1,4 +1,4 @@
-const المطورين = ['213540419314', '104806312050733'];
+const المطورين = ['213551217759', '104806312050733'];
 
 const handler = async (m, { conn, usedPrefix, command, args }) => {
   const الرقم = m.sender.replace(/[^0-9]/g, '');

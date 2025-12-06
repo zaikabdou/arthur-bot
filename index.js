@@ -34,12 +34,12 @@ const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
 let { say } = cfonts
 console.log(chalk.magentaBright('\n❀ Iniciando...'))
-say('Yuki Suou', {
+say('ARTHUR', {
   font: 'simple',
   align: 'left',
   gradient: ['green', 'white']
 })
-say('Made with love by Destroy', {
+say('Made by Destroy Power', {
   font: 'console',
   align: 'center',
   colors: ['cyan', 'magenta', 'yellow']
@@ -200,7 +200,7 @@ if (!fs.existsSync(credsPath)) {
       try {
         let tempPhone
         do {
-          tempPhone = await question(chalk.bgBlack(chalk.bold.greenBright(`[ ✿ ]  Por favor, Ingrese el número de WhatsApp.\n${chalk.bold.magentaBright('---> ')}`)))
+          tempPhone = await question(chalk.bgBlack(chalk.bold.greenBright(`[ ✿ ]  Please enter the WhatsApp number.\n${chalk.bold.magentaBright('---> ')}`)))
           tempPhone = (tempPhone || '').replace(/\D/g, '')
           if (!tempPhone.startsWith('+')) tempPhone = `+${tempPhone}`
         } while (!await isValidPhoneNumber(tempPhone))
@@ -209,7 +209,7 @@ if (!fs.existsSync(credsPath)) {
         setTimeout(async () => {
           let codeBot = await conn.requestPairingCode(addNumber)
           codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
-          console.log(chalk.bold.white(chalk.bgMagenta(`[ ✿ ]  Código:`)), chalk.bold.white(chalk.white(codeBot)))
+          console.log(chalk.bold.white(chalk.bgMagenta(`[ ✿ ]  CODE:`)), chalk.bold.white(chalk.white(codeBot)))
         }, 1500)
       } catch (err) {
         console.error('Error getting phone interactively:', err)
@@ -220,7 +220,7 @@ if (!fs.existsSync(credsPath)) {
 
 conn.isInit = false
 conn.well = false
-conn.logger?.info && conn.logger.info(`[ ✿ ]  H E C H O\n`)
+conn.logger?.info && conn.logger.info(`[ ✿ ]  ＡＢＤＯＵ\n`)
 
 // حفظ دوري لقاعدة البيانات (استبدلت opts بـ global.opts)
 if (!global.opts['test']) {

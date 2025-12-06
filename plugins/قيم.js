@@ -1,7 +1,7 @@
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     let stars = parseInt(text); // تحويل النص إلى رقم للحصول على عدد النجوم
     let feedbackMessage = '';
-    let developerContact = '213540419314@s.whatsapp.net'; // رقم المطور للتواصل
+    let developerContact = '213551217759@s.whatsapp.net'; // رقم المطور للتواصل
 
     // إعداد الرد بناءً على عدد النجوم
     switch (stars) {

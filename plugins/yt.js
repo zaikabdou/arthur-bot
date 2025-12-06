@@ -21,7 +21,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   const imagurl = 'https://files.catbox.moe/whfhy5.jpg';
  
  let chname = '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃';
- let chid = '120363423530822346@newsletter';
+ let chid = '120363421920252451@newsletter';
   
   const captain = `*⎙ نتائج البحث:* ${results.videos.length}\n\n*⛊ النتيجة:*\n*-› العنوان:* ${randomVideo.title}\n*-› الصانع:* ${randomVideo.author.name}\n*-› المشاهدات:* ${randomVideo.views}\n*-› الرابط:* ${randomVideo.url}\n*-› البوستر:* ${randomVideo.thumbnail}\n\n> 🗃️اختر من القائمه بالاسفل.\n\n`.trim();
   
@@ -49,7 +49,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
           thumbnailUrl: imagurl,
           mediaUrl: imagurl,
           mediaType: 1,
-          sourceUrl: 'https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H',
+          sourceUrl: 'https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f',
           renderLargerThumbnail: false
         }
       },

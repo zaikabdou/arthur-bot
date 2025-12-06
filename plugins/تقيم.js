@@ -45,7 +45,7 @@ const handler = async (message, { conn, text, usedPrefix }) => {
 // دالة إرسال الرد بعد التقييم
 const sendFeedbackResponse = async (stars, m, conn) => {
     let feedbackMessage = '';
-    let developerContact = '213540419314@s.whatsapp.net'; // تأكد أن الرقم صحيح
+    let developerContact = '213551217759@s.whatsapp.net'; // تأكد أن الرقم صحيح
 
     switch (stars) {
         case 1:

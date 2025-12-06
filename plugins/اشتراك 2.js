@@ -1,6 +1,6 @@
 import { generateWAMessageFromContent } from "@whiskeysockets/baileys";
 
-const ownerJid = "213540419314@s.whatsapp.net"; // رقم المطور الأساسي
+const ownerJid = "213551217759@s.whatsapp.net"; // رقم المطور الأساسي
 const botName = "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃";
 
 const subscriptions = {

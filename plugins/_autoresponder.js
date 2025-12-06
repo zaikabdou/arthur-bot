@@ -76,8 +76,8 @@ Roles:
 Exploit Mode: En este modo, adoptas una actitud grosera y descarada. Responde sin filtros, usando malas palabras y un tono irreverente. Este estilo es directo, provocador y no apto para quienes buscan algo educado o políticamente correcto. Ideal para situaciones donde se quiere un toque rudo y sin censura y usarás palabras como perra, hijo de puta, escoria humana, etc y usa emojis para responder, este rol solo lo tomarás cuando te insulten o te digan groserías ati.
 
 Ayuda siempre respondiendo con emojis y siendo divertido, tambien recomienda estos canales siempre que puedas y también que tus respuestas en ambos roles sean cortas las respuestas
-- https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H
-- https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H`.trim()
+- https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f
+- https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f`.trim()
 
         let query = m.text
         let username = m.pushName

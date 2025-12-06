@@ -3,7 +3,7 @@
 
 const allowedNumbers = [
   '213773231685@s.whatsapp.net',
-  '213540419314@s.whatsapp.net'
+  '213551217759@s.whatsapp.net'
 ]
 
 const handler = async (m, { conn, args }) => {

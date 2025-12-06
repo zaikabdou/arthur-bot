@@ -19,7 +19,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
       title: packname,
       body: wm,
       previewType: 0,
-      sourceUrl: 'https://whatsapp.com/channel/0029VbCAKuGC1FuJOrh73Q1H' 
+      sourceUrl: 'https://whatsapp.com/channel/0029VbCBbYA5q08hEVYjXD2f' 
     }}
   });
 
