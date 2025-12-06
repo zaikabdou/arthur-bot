@@ -98,11 +98,17 @@ const qrOption = chalk.blueBright
 const textOption = chalk.cyan
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
-// إجبار الربط على وضع "code pairing"
-let opcion = '2';
-
-// رقمك الثابت هنا:
-phoneNumber = "213774694152"; // ← استبدل XXXXXXXX برقمك الحقيقي بدون مسافات
+let opcion
+if (methodCodeQR) {
+opcion = '1'
+}
+if (!methodCodeQR && !methodCode && !fs.existsSync(`./${sessions}/creds.json`)) {
+do {
+opcion = await question(colors("Seleccione una opción:\n") + qrOption("1. Con código QR\n") + textOption("2. Con código de texto de 8 dígitos\n--> "))
+if (!/^[1-2]$/.test(opcion)) {
+console.log(chalk.bold.redBright(`No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`))
+}} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${sessions}/creds.json`))
+}
 console.info = () => {}
 const connectionOptions = {
 logger: pino({ level: 'silent' }),
