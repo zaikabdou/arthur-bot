@@ -89,19 +89,16 @@ const msgRetryCounterMap = new Map()
 const msgRetryCounterCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
 const userDevicesCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
 const { version } = await fetchLatestBaileysVersion()
-let phoneNumber = global.botNumber
-const methodCodeQR = process.argv.includes("qr")
-const methodCode = !!phoneNumber || process.argv.includes("code")
-const MethodMobile = process.argv.includes("mobile")
+let phoneNumber = process.env.botNumber
+const methodCodeQR = false  // نخلي QR false دائمًا
+const methodCode = process.env.METHOD_CODE === 'true'  // لتفعيل الخيار الثاني
+const MethodMobile = false  // لو ما تستخدم الموبايل
 const colors = chalk.bold.white
 const qrOption = chalk.blueBright
 const textOption = chalk.cyan
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
-let opcion
-if (methodCodeQR) {
-opcion = '1'
-}
+let opcion = '2'  // مباشرة نحدد الخيار الثاني دائمًا
 if (!methodCodeQR && !methodCode && !fs.existsSync(`./${sessions}/creds.json`)) {
 do {
 opcion = await question(colors("Seleccione una opción:\n") + qrOption("1. Con código QR\n") + textOption("2. Con código de texto de 8 dígitos\n--> "))
