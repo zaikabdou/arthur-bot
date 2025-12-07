@@ -12,7 +12,7 @@ import cheerio from 'cheerio'
     // Mengacak array gambarUrls
     for (let i = gambarUrls.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [gambarUrls[i], gambarUrls[j] = [gambarUrls[j], gambarUrls[i];
+      [gambarUrls[i], gambarUrls[j]] = [gambarUrls[j], gambarUrls[i]];
     }
 
     // Mengirim 10 gambar secara acak

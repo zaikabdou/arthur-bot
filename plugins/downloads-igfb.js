@@ -10,7 +10,7 @@ const api = `${global.APIs.adonix.url}/download/instagram?apikey=${global.APIs.a
 const res = await fetch(api)
 const json = await res.json()
 if (json.status && json.data?.length) {
-const data = json.data.map(v => v.url)
+data = json.data.map(v => v.url)
 }} catch (e) {}
 }
 if (/(facebook\.com|fb\.watch)/i.test(args[0]) && !data.length) {
@@ -19,7 +19,7 @@ const api = `${global.APIs.adonix.url}/download/facebook?apikey=${global.APIs.ad
 const res = await fetch(api)
 const json = await res.json()
 if (json.status && json.result?.media?.video_hd) {
-const data = [json.result.media.video_hd]
+data = [json.result.media.video_hd]
 }} catch (e) {}
 }
 if (!data.length) {
@@ -28,7 +28,7 @@ const api = `${global.APIs.vreden.url}/api/igdownload?url=${url}`
 const res = await fetch(api)
 const json = await res.json()
 if (json.resultado?.respuesta?.datos?.length) {
-const data = json.resultado.respuesta.datos.map(v => v.url)
+data = json.resultado.respuesta.datos.map(v => v.url)
 }} catch (e) {}
 }
 if (!data.length) {
@@ -37,7 +37,7 @@ const api = `${global.APIs.delirius.url}/download/instagram?url=${url}`
 const res = await fetch(api)
 const json = await res.json()
 if (json.status && json.data?.length) {
-const data = json.data.map(v => v.url)
+data = json.data.map(v => v.url)
 }} catch (e) {}
 }
 if (!data.length) return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido.`, m)

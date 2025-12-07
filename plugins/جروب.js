@@ -11,7 +11,7 @@ let handler = async (m, { conn, args, usedPrefix, command, isAdmin, isOwner }) =
         let isClose = {
             'فتح': 'not_announcement',
             'قفل': 'announcement',
-        }[args[0];
+        }[args[0]];
 
         try {
             await conn.groupSettingUpdate(m.chat, isClose);

@@ -17,12 +17,12 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function msToTime(duration) {
 var milliseconds = parseInt((duration % 1000) / 100),
-const seconds = Math.floor((duration / 1000) % 60),
-const minutes = Math.floor((duration / (1000 * 60)) % 60),
-const hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
-const hours = (hours < 10) ? "0" + hours : hours
-const minutes = (minutes < 10) ? "0" + minutes : minutes
-const seconds = (seconds < 10) ? "0" + seconds : seconds
+seconds = Math.floor((duration / 1000) % 60),
+minutes = Math.floor((duration / (1000 * 60)) % 60),
+hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
+hours = (hours < 10) ? "0" + hours : hours
+minutes = (minutes < 10) ? "0" + minutes : minutes
+seconds = (seconds < 10) ? "0" + seconds : seconds
 
 return minutes + " دقائق " + seconds + " ثواني " 
 }

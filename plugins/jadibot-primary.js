@@ -17,16 +17,16 @@ let botJid
 let selectedBot
 
 if (m.mentionedJid && m.mentionedJid.length > 0) {
-const botJid = m.mentionedJid[0]
+botJid = m.mentionedJid[0]
 } else if (m.quoted) {
-const botJid = m.quoted.sender
+botJid = m.quoted.sender
 } else {
-const botJid = args[0].replace(/[^0-9]/g, '') + pref
+botJid = args[0].replace(/[^0-9]/g, '') + pref
 }
 if (botJid === detectwhat2 || botJid === detectwhat) {
-const selectedBot = conn
+selectedBot = conn
 } else {
-const selectedBot = users.find((conn) => detectwhat2 === botJid)
+selectedBot = users.find((conn) => detectwhat2 === botJid)
 }
 
 if (!selectedBot) {

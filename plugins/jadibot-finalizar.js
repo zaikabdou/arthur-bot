@@ -6,7 +6,7 @@ if (/stop/i.test(command)) {
 let i = global.conns.indexOf(conn)
 if (global.conn.user.jid != conn.user.jid && m.sender != global.conn.user.jid) {
 if (i < 0) return
-const resp = `${gt} Pausado. Si quiere reanudar use el comando *${usedPrefix}serbot* o su token.`
+resp = `${gt} Pausado. Si quiere reanudar use el comando *${usedPrefix}serbot* o su token.`
 await conn.sendMessage(m.chat, {text: resp}, {quoted: m})
 conn.ev.removeAllListeners()
 conn.ws.close()
@@ -16,11 +16,11 @@ return
 }
 }
 } else {
-const resp = '*Este comando sólo puede ser ejecutado por un usuario que sea Sub-Bot*.'
+resp = '*Este comando sólo puede ser ejecutado por un usuario que sea Sub-Bot*.'
 return conn.sendMessage(m.chat, {text: resp}, {quoted: m})
 }
 } catch (e) {
-const resp = '*Hubo un error al intentar apagar el Sub-Bot.*'
+resp = '*Hubo un error al intentar apagar el Sub-Bot.*'
 console.log('Error al intentar apagar el Sub-Bot: ', e)
 return conn.sendMessage(m.chat, {text: resp}, {quoted: m})
 }
