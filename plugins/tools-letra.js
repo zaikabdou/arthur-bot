@@ -78,11 +78,11 @@ async function handler(m, { conn, text = '', command = '' }) {
       if (!text) {
         // عرض دليل سريع و أمثلة لكل خط
         let list = Object.keys(yStr).map(n => {
-          const ex = global.style('مرحبا', parseInt(n))
+          const ex = global.style('ARTHUR', parseInt(n))
           const name = styleNames[n] || n
           return `❀ *${n} — ${name}*\n> مثال: ${ex}`
         }).join('\n\n')
-        return conn.reply(m.chat, `❀ استخدم: ${cmd} <نص>\n❀ لتغيير الخط: اكتب: style <رقم>\n\n❀ قوائم الخطوط المتاحة:\n\n${list}`, m)
+        return conn.reply(m.chat, `❀ استخدم: ${cmd} <نص>\n❀ لتغيير الخط: اكتب: رقم <رقم>\n\n❀ قوائم الخطوط المتاحة:\n\n${list}`, m)
       }
       const result = global.style(text, global.currentFontStyle)
       return conn.reply(m.chat, `❀ النتيجة (الخط الحالي: ${global.currentFontStyle} — ${styleNames[global.currentFontStyle] || ''}):\n\n${result}`, m)
@@ -90,7 +90,7 @@ async function handler(m, { conn, text = '', command = '' }) {
 
     // أمر: style أو letra => تغيير خط افتراضي
     if (['style', 'letra'].includes(cmd)) {
-      if (!text) return conn.reply(m.chat, '❀ من فضلك، أدخل رقم الخط الذي تريده. مثال: style 3', m)
+      if (!text) return conn.reply(m.chat, '❀ من فضلك، أدخل رقم الخط الذي تريده. مثال: رقم 3', m)
       const num = parseInt(text.trim())
       if (!num || !yStr[num]) return conn.reply(m.chat, `❀ الرقم غير صالح. اختر من 1 إلى ${Object.keys(yStr).length}.`, m)
       global.currentFontStyle = num
@@ -104,8 +104,8 @@ async function handler(m, { conn, text = '', command = '' }) {
   }
 }
 
-handler.help = ['زخرف <نص>', 'زخرفة <نص>', 'style <رقم>', 'letra <رقم>']
+handler.help = ['زخرف <نص>', 'زخرفة <نص>', 'style <رقم>', 'رقم <رقم>']
 handler.tags = ['fun']
-handler.command = ['زخرف', 'زخرفة', 'style', 'letra']
+handler.command = ['زخرف', 'زخرفة', 'style', 'رقم']
 
 export default handler
