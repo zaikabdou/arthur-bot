@@ -27,9 +27,7 @@ let handler = async (m, { conn }) => {
     message: {
       locationMessage: {
         name: "✪┋𝙰𝚁𝚃𝙷𝚄𝚁☞𝙱𝙾𝚃┋✪ ✓",
-        const thumbRes = await fetch('https://qu.ax/bHS3c');
-const thumbArray = await thumbRes.arrayBuffer();
-jpegThumbnail: Buffer.from(thumbArray),
+        jpegThumbnail: await (await fetch('https://qu.ax/bHS3c')).buffer(),
         vcard: `BEGIN:VCARD
 VERSION:3.0
 N:;𝙰𝚁𝚃_𝙱𝙾𝚃;;;

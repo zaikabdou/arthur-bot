@@ -37,9 +37,7 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
   let imgUrl = `https://qu.ax/rJHDD.jpg`;
   let imgBuffer;
   try {
-    const imgRes = await fetch(imgUrl);
-const imgArray = await imgRes.arrayBuffer();
-imgBuffer = Buffer.from(imgArray);
+    imgBuffer = await (await fetch(imgUrl)).buffer();
   } catch (error) {
     console.error('[ERROR] فشل تحميل الصورة:', error);
     return m.reply('[ERROR] لم نتمكن من تحميل الصورة. حاول لاحقاً.');

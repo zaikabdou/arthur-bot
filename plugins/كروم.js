@@ -13,8 +13,7 @@ var handler = async (m, { text, usedPrefix, command }) => {
       const content = await response.text();
       m.reply(`محتويات النص:\n${content}`);
     } else {
-      const arrayBuffer = await response.arrayBuffer();
-const buffer = Buffer.from(arrayBuffer);
+      const buffer = await response.buffer();
       const fileName = url.split('/').pop();
       await conn.sendMessage(m.chat, buffer, 'documentMessage', { filename: fileName });
       m.reply(`تم تنزيل الملف: ${fileName}\nالحجم: ${buffer.length} بايت`);
