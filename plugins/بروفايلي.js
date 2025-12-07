@@ -26,7 +26,9 @@ let handler = async (m, { conn }) => {
   let bar = '▰'.repeat(filledBar) + '▱'.repeat(10 - filledBar)
 
   let pp = await conn.profilePictureUrl(who, 'image').catch(_ => 'https://qu.ax/fNyJg.jpg')
-  let img = await (await fetch(pp)).buffer()
+  const imgRes = await fetch(pp);
+const imgArray = await imgRes.arrayBuffer();
+let img = Buffer.from(imgArray);
 
   let now = new Date()
   let locale = 'ar'

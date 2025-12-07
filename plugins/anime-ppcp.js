@@ -5,9 +5,13 @@ try {
 await m.react('🕒')
 let data = await (await fetch('https://raw.githubusercontent.com/ShirokamiRyzen/WAbot-DB/main/fitur_db/ppcp.json')).json()
 let cita = data[Math.floor(Math.random() * data.length)]
-let cowi = await (await fetch(cita.cowo)).buffer()
+const cowiRes = await fetch(cita.cowo);
+const cowiArray = await cowiRes.arrayBuffer();
+let cowi = Buffer.from(cowiArray);
 await conn.sendFile(m.chat, cowi, '', '*Masculino* ♂', m)
-let ciwi = await (await fetch(cita.cewe)).buffer()
+const ciwiRes = await fetch(cita.cewe);
+const ciwiArray = await ciwiRes.arrayBuffer();
+let ciwi = Buffer.from(ciwiArray);
 await conn.sendFile(m.chat, ciwi, '', '*Femenina* ♀', m)
 await m.react('✔️')
 } catch (error) {

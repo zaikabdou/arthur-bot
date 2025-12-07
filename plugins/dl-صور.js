@@ -19,7 +19,8 @@ import cheerio from 'cheerio'
     for (let i = 0; i < 10; i++) {
       let imageUrl = gambarUrls[i];
       let imageRes = await fetch(imageUrl);
-      let imageBuffer = await imageRes.buffer();
+      const imageArray = await imageRes.arrayBuffer();
+let imageBuffer = Buffer.from(imageArray);
 
       // Menggunakan fungsi sendImage untuk mengirim gambar ke WhatsApp
       await conn.sendFile(m.chat, imageBuffer, 'boibza.jpg', '');
