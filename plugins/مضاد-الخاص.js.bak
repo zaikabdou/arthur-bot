@@ -1,0 +1,77 @@
+// ===[ AntiPrivate Ultimate 2026 - يحظر أي رسالة خاصة فورًا ]===
+// ملف: plugins/antiprivate.js
+// أمر: .مضاد_الخاص   (on/off)   ← أمر مستقل تمامًا، ما يعتمد على ملف التفعيلات
+
+export default {
+  help: ['مضاد_الخاص'],
+  tags: ['owner'],
+  command: /^(مضاد[_-]?الخاص|antiprivate|anticall|blockprivate)$/i,
+  owner: true, // فقط الأونر يقدر يشغّل/يوقف
+
+  async handler(m, { conn, text, usedPrefix, command }) {
+    // تبديل الحالة
+    const isEnable = /on|enable|شغل|فتح/i.test(text)
+    const wasEnabled = global.antiPrivate || false
+    global.antiPrivate = isEnable
+
+    await m.reply(
+      `*⊱─═⪨༻⚡༺⪩═─⊰*\n` +
+      `✦ *مضاد الخاص الآن:* ${isEnable ? 'مفعّ]الآن:* `مفعّل ✅' : 'معطّل ❌'}\n` +
+      `✦ *الحالة:* ${isEnable ? 'أي واحد يكلمك خاص سيُحظر فورًا' : 'الخاص مفتوح للجميع'}\n` +
+      `*⊱─═⪨༻⚡༺⪩═─⊰*`
+    )
+  },
+
+  // ==== الجزء الأقوى: before hook ====
+  async before(m, { conn }) {
+    if (!global.antiPrivate) return true
+    if (m.isGroup) return true
+    if (m.fromMe || m.isBaileys) return true
+
+    // المطورين المستثنين (أرقام بدون كود الدولة)
+    const developers = ['213551217759', '213773231685', '201555555555'] // أضف أرقامك هنا
+
+    const sender = m.sender.replace(/[^0-9]/g, '')
+    if (developers.includes(sender)) return true
+
+    try {
+      // نص التحذير + روابط المطور والجروب
+      const warnText = `
+*⊱─═⪨༻⚡༺⪩═─⊰*
+*ممنوع الكلام في الخاص*
+*تم حظرك تلقائيًا لأن مضاد الخاص مفعّل*
+
+*للتواصل مع المطور:*
+wa.me/213551217759
+
+*مجموعة البوت الرسمية:*
+https://chat.whatsapp.com/CvWNDXXjw1J8K7y92bPycz
+*⊱─═⪨༻⚡༺⪩═─⊰*
+      `.trim()
+
+      // إرسال التحذير قبل الحظر
+      await conn.sendMessage(m.chat, { text: warnText }, { quoted: m })
+
+      // حظر المستخدم (يدعم كل إصدارات Baileys)
+      const block = async () => {
+        try { await conn.updateBlockStatus(m.sender, 'block') }
+        catch {
+          try { await conn.updateBlockStatus(m.sender, true) }
+          catch { /* fallback */ }
+        }
+      }
+      await block()
+
+      // إشعار للأونر في الخاص (اختياري، جميل جدًا)
+      const ownerJid = (global.owner?.[0]?.[0] || conn.user.jid.split(':')[0]) + '@s.whatsapp.net'
+      await conn.sendMessage(ownerJid, {
+        text: `تم حظر شخص من الخاص\nالرقم: wa.me/${sender}`
+      }).catch(() => {})
+
+    } catch (err) {
+      console.error('خطأ في مضاد الخاص:', err)
+    }
+
+    return true
+  }
+}

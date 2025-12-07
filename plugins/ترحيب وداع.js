@@ -1,5 +1,10 @@
 export async function participantsUpdate({ id, participants, action }) {
     try {
+        // تهيئة db لو ما كان موجود
+        if (!global.db.data.chats[id]) global.db.data.chats[id] = {}
+        const chat = global.db.data.chats[id]
+        if (!chat.welcome) return // لو الوداع معطل، تجاهل
+
         let conn = global.conn; // الاتصال الرئيسي بالبوت
         for (let user of participants) {
             let metadata = await conn.groupMetadata(id).catch(() => ({}));
@@ -15,7 +20,7 @@ export async function participantsUpdate({ id, participants, action }) {
                 }
 
                 let byeMessage = `*┏━━⊱❰ 🍄 وداعاً 🍄 ❱⊰━━┓*\n` +
-                                 `*┃* 𓆩👋𓆪 أوه لا! ${userTag} غادر مجموعة *${groupName}* 😢💔\n` +
+                                 `*┃* 𓆩👋𓆪 أوه لا! \( {userTag} غادر مجموعة * \){groupName}* 😢💔\n` +
                                  `*┃* 🕊️ نتمنى لك حظاً سعيداً في رحلتك القادمة! 🚀✨\n` +
                                  `*┃* 🍃 لا تنسَ أن تبتسم، فالحياة تستمر! 😊💕\n` +
                                  `*┗━━━━━━━━━━━━━━━━━┛*`;

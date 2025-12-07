@@ -1,24 +1,18 @@
 import moment from 'moment-timezone';
 import { prepareWAMessageMedia, generateWAMessageFromContent } from "@whiskeysockets/baileys";
 
-// تعريف المتغيرات العالمية للحدود (ستكون منفصلة لكل مجموعة وكل أمر)
 let usageLimits = {};
 
-// Handler الرئيسي للأمر
 let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, command }) => {
-  // التحقق من الصلاحيات بدقة (مع throw لإيقاف التنفيذ إذا لزم الأمر)
   if (!(isAdmin || isOwner)) {
     global.dfail('admin', m, conn);
-    throw false; // يضمن إيقاف التنفيذ تمامًا
+    throw false;
   }
 
   let groupId = m.chat;
   let senderId = m.sender;
-
-  // تصحيح usageKey ليكون منفصلًا لكل أمر داخل المجموعة (دعم حد مستقل لكل نوع منشن)
   let usageKey = `${groupId}:${command}`;
 
-  // أمر تعيين الحد (للمطور فقط، ويمكن تعيين حد مختلف لكل أمر إذا أريد لاحقًا)
   if (command === 'تحديد_منشن') {
     if (!isOwner) {
       m.reply('❌ هذا الأمر متاح فقط للمطور.');
@@ -29,13 +23,11 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
       m.reply('❌ الرجاء إدخال رقم صحيح كحد للاستخدام.');
       return;
     }
-    // تعيين الحد للمجموعة بشكل عام، لكن يمكن تخصيصه لكل command إذا أضفنا args إضافية
     usageLimits[groupId] = limit;
-    m.reply(`✅ تم تعيين الحد الأقصى لاستخدام أوامر المنشن إلى ${limit} مرة (قابل للتخصيص لكل أمر).`);
+    m.reply(`✅ تم تعيين الحد الأقصى لاستخدام أوامر المنشن إلى ${limit} مرة.`);
     return;
   }
 
-  // القائمة التفاعلية الرئيسية للمنشن (محسّنة للتوافق مع إصدارات واتساب الجديدة)
   if (command === 'منشن') {
     const coverImageUrl = 'https://files.catbox.moe/ziws8j.jpg';
     const messa = await prepareWAMessageMedia(
@@ -121,24 +113,19 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
     return;
   }
 
-  // تهيئة الحد إذا لم يكن موجودًا (حد عام للمجموعة، لكن usageKey منفصل لكل command)
-  if (!usageLimits[groupId]) usageLimits[groupId] = 3; // حد افتراضي 3
+  if (!usageLimits[groupId]) usageLimits[groupId] = 3;
   if (usageLimits[usageKey] === undefined) usageLimits[usageKey] = usageLimits[groupId];
 
-  // التحقق من الحد اليومي (منفصل لكل أمر)
   if (usageLimits[usageKey] <= 0) {
     m.reply('❌ تم استنفاد الحد الأقصى لاستخدام هذا الأمر في المجموعة. الرجاء التواصل مع المطور لإعادة التعيين.');
     return;
   }
 
-  // تهيئة المتغيرات (التاريخ والوقت بصيغة احترافية للسجلات)
   let pesan = args.join` `;
   let time = moment.tz('Asia/Riyadh').format('hh:mm A');
   let date = moment.tz('Asia/Riyadh').format('YYYY/MM/DD');
-  // استخدام m.chat كـ groupName، لكن للحصول على الاسم الحقيقي استخدم await conn.getName (مع تحسين لتجنب البطء عبر تخزين مؤقت إذا أمكن)
-  let groupName = await conn.getName(m.chat); // أفضل للعرض، والبطء ضئيل في مجموعات صغيرة
+  let groupName = m.chat;
 
-  // فلترة المشاركين بناءً على النوع (دقيقة ومنظمة)
   let filteredParticipants =
     command === 'منشن_اعضاء'
       ? participants.filter(p => !p.admin)
@@ -146,7 +133,6 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
       ? participants.filter(p => p.admin)
       : participants;
 
-  // زخرفة الرسالة (محسّنة ومتناسقة مع تنظيم أفضل)
   let teks = `
 ─⟢ـ*
 > ˼⚕️˹↜ ${command === 'منشن_اعضاء' ? '🌟 *قــســم الأعضاء العاديين*' : command === 'منشن_مشرفين' ? '👑 *قــســم المشرفين*' : '🌟 *قــســم جميع أعضاء المجموعة*'} ↶
@@ -170,20 +156,15 @@ ${filteredParticipants.map(mem => `┊⟣｢@${mem.id.split('@')[0]}｣`).join('
 > ˼⚕️˹↜ 🤖 *تحيات⇇ 𝙰𝚁𝚃_𝙱𝙾𝚃* ↶
 `;
 
-  // إرسال الرسالة مع mentions دقيقة (استخدام Set لتجنب التكرار)
-  const uniqueMentions = [...new Set(filteredParticipants.map(a => a.id).concat([m.sender]))];
-
   conn.sendMessage(m.chat, {
     text: teks,
-    mentions: uniqueMentions,
+    mentions: filteredParticipants.map(a => a.id),
     image: { url: 'https://qu.ax/nrLHp.jpg' }
   });
 
-  // خصم من الحد (منفصل لكل أمر)
   usageLimits[usageKey] -= 1;
 };
 
-// تعريفات الأمر (مع دعم مخفي إذا أريد)
 handler.help = ['منشن_اعضاء <message>', 'منشن_مشرفين <message>', 'منشن_الكل <message>', 'تحديد_منشن <عدد>', 'منشن'];
 handler.tags = ['group'];
 handler.command = /^(منشن_اعضاء|منشن_مشرفين|منشن_الكل|تحديد_منشن|منشن)$/i;

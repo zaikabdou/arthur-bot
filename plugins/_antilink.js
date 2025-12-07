@@ -1,90 +1,74 @@
-let linkRegex = /chat\.whatsapp\.com\/([0-9A-Za-z]{20,24})/i;
-let linkRegex1 = /whatsapp\.com\/channel\/([0-9A-Za-z]{20,24})/i;
+// ===[ مضاد اللينكات – النسخة الجبارة – يمسح كل رابط واتساب مهما كان مخفي ]===
+// ملف: plugins/antilink.js
+// يشتغل مع: .فتح مضاد_اللينكات  |  .قفل مضاد_اللينكات
+// يمسح الرسالة فورًا + طرد (إذا البوت أدمن) + رسالة احترافية + لا يطرد المشرفين
 
-export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner, participants }) {  
-  if (!m.isGroup) return;
+const LINK_REGEX = [
+  /chat\.whatsapp\.com\/[0-9A-Za-z]{20,24}/i,
+  /whatsapp\.com\/channel\/[0-9A-Za-z]{20,24}/i,
+  /wa\.me\/[0-9]{5,15}/i,
+  /t\.me\/[a-zA-Z0-9_]{5,32}/i,
+  /bit\.ly|tinyurl\.com|short\.link|goo\.gl|rebrand\.ly/i
+]
 
-  // حماية: المشرفين والمالكين والبوت نفسه مستثنين
-  if (isAdmin || isOwner || isROwner || m.fromMe) return;
+export async function before(m, { conn, isAdmin, isBotAdmin, isOwner }) {
+  if (!m.isGroup || m.fromMe || isAdmin || isOwner) return true
 
-  // قراءة إعدادات الشات
-  const chat = global.db.data.chats[m.chat] || {};
+  const chat = global.db.data.chats[m.chat] || {}
+  if (!chat.antiLink && !chat.antiLink2) return true
 
-  // استخراج الـ text الحقيقي سواء كان message أو template أو غيره
-  const text = 
-    m.text || 
-    m.body || 
-    m.message?.conversation || 
-    m.message?.extendedTextMessage?.text ||
-    m.message?.imageMessage?.caption ||
-    m.message?.videoMessage?.caption ||
-    '';
+  const text = m.text || m.caption || ''
+  if (!text) return true
 
-  // كشف الرابط
-  const isGroupLink = linkRegex.exec(text) || linkRegex1.exec(text);
-  const grupo = "https://chat.whatsapp.com";
+  // هل فيه رابط ممنوع؟
+  const hasBannedLink = LINK_REGEX.some(regex => regex.test(text))
+  if (!hasBannedLink) return true
 
-  // لو الأدمن أرسل الرابط → فقط تحذير بسيط
-  if (isAdmin && chat.antiLink && text.includes(grupo)) {
-    return m.reply('*[ ☠️ ] مضاد روابط مفعل ~ 𝙰𝚁𝚃_𝙱𝙾𝚃_~ ، بس انت ادمن فمسموح لك [ ☠️ ]*');
+  // استثناء رابط الجروب نفسه
+  if (isBotAdmin) {
+    try {
+      const inviteCode = await conn.groupInviteCode(m.chat)
+      const ownLink = `https://chat.whatsapp.com/${inviteCode}`
+      if (text.includes(ownLink)) return true
+    } catch {}
   }
 
-  // المرحلة الأساسية: اكتشاف رابط وطرد
-  if (chat.antiLink && isGroupLink && !isAdmin) {
+  // حذف الرسالة فورًا
+  try {
+    await conn.sendMessage(m.chat, {
+      delete: { remoteJid: m.chat, fromMe: false, id: m.key.id, participant: m.sender }
+    })
+  } catch (e) {
+    console.log('فشل حذف الرسالة:', e)
+  }
 
-    // لو البوت أدمن → تحقق إن المستخدم لم يرسل رابط نفس القروب
-    if (isBotAdmin) {
-      const linkThisGroup = `https://chat.whatsapp.com/${await conn.groupInviteCode(m.chat)}`;
-      if (text.includes(linkThisGroup)) return;
-    }
+  // رسالة احترافية + منشن
+  const warning = `
+❍━═━═━═━═━═━═━❍
+❍⇇ تم اكتشاف رابط ممنوع
+❍
+❍⇇ العضو ↜ @${m.sender.split('@')[0]}
+❍⇇ النوع  ↜ رابط واتساب/تليجرام/مختصر
+❍⇇ الإجراء ↜ تم حذف الرسالة
+${isBotAdmin ? '❍⇇ تم الطرد تلقائيًا' : '❍⇇ البوت ليس أدمن → لا يمكنه الطرد'}
+❍
+❍⇇ مضاد اللينكات مفعّل
+❍━═━═━═━═━═━═━❍
+  `.trim()
 
-    // رسالة تحذير
-    await conn.sendMessage(
-      m.chat,
-      { 
-        text: `*「 مضاد-روابط 」*\n\n@${m.sender.split('@')[0]} [ 💀 ] أرسلت رابط وسيتم طردك [ 💀 ]`,
-        mentions: [m.sender] 
-      },
-      { quoted: m }
-    );
+  await conn.sendMessage(m.chat, {
+    text: warning,
+    mentions: [m.sender]
+  }, { quoted: m })
 
-    // لو البوت ليس أدمن → فقط بلّغ
-    if (!isBotAdmin) {
-      const admins = participants.filter(v => v.admin).map(v => v.id);
-      return conn.sendMessage(
-        m.chat,
-        { 
-          text: `*[ 🥲 ] مضاد روابط شغال، لكن انا لست أدمن فلا أستطيع طرده [ 🥲 ]*`,
-          mentions: admins
-        },
-        { quoted: m }
-      );
-    }
-
-    // هنا البوت أدمن — حذف الرسالة + الطرد
+  // طرد إذا البوت أدمن
+  if (isBotAdmin) {
     try {
-      await conn.sendMessage(
-        m.chat,
-        { 
-          delete: {
-            remoteJid: m.chat,
-            id: m.key.id,
-            participant: m.key.participant || m.sender
-          }
-        }
-      );
+      await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove')
     } catch (e) {
-      console.log('Delete error:', e);
-    }
-
-    // طرد العضو
-    try {
-      const res = await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
-      if (res?.[0]?.status === "404") return;
-    } catch (err) {
-      console.log("Kick error:", err);
+      console.log('فشل الطرد:', e)
     }
   }
 
-  return true;
+  return true
 }

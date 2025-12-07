@@ -1,0 +1,159 @@
+// plugins/mute.js
+import fs from 'fs'
+import path from 'path'
+
+const MUTES_FILE = path.join(process.cwd(), 'database', 'mutes.json')
+
+// تحميل ملف الكتم
+function loadMutes() {
+  try {
+    if (!fs.existsSync(MUTES_FILE)) {
+      fs.mkdirSync(path.dirname(MUTES_FILE), { recursive: true })
+      fs.writeFileSync(MUTES_FILE, JSON.stringify({}, null, 2))
+      return {}
+    }
+    const data = fs.readFileSync(MUTES_FILE, 'utf8')
+    return JSON.parse(data || '{}')
+  } catch (e) {
+    console.error('خطأ في تحميل ملف الكتم:', e)
+    return {}
+  }
+}
+
+// حفظ ملف الكتم
+function saveMutes(data) {
+  try {
+    fs.mkdirSync(path.dirname(MUTES_FILE), { recursive: true })
+    fs.writeFileSync(MUTES_FILE, JSON.stringify(data, null, 2))
+  } catch (e) {
+    console.error('خطأ في حفظ ملف الكتم:', e)
+  }
+}
+
+// تهيئة القاعدة
+if (!global.db) global.db = { data: {} }
+if (!global.db.data) global.db.data = { users: {}, chats: {}, settings: {} }
+if (!global.db.data.users) global.db.data.users = {}
+
+// مزامنة ملف الكتم مع global.db
+const persisted = loadMutes()
+for (const jid in persisted) {
+  if (!global.db.data.users[jid]) global.db.data.users[jid] = {}
+  global.db.data.users[jid].muted = !!persisted[jid].muted
+  global.db.data.users[jid].warns = persisted[jid].warns || 0
+}
+
+// حفظ دائم عند التغيير
+function saveMutesToFile() {
+  const obj = {}
+  for (const jid in global.db.data.users) {
+    const u = global.db.data.users[jid]
+    if (u && (u.muted || u.warns > 0)) {
+      obj[jid] = { muted: !!u.muted, warns: u.warns || 0 }
+    }
+  }
+  saveMutes(obj)
+}
+
+// تنظيف الـ jid
+function getJid(user) {
+  if (!user) return null
+  if (user.endsWith('@s.whatsapp.net') || user.endsWith('@g.us')) return user
+  if (/^\d+$/.test(user)) return user + '@s.whatsapp.net'
+  return user
+}
+
+// =================== الأمر الرئيسي ===================
+const handler = async (m, { conn, text, usedPrefix, command, isAdmin, isBotAdmin }) => {
+  if (!m.isGroup) return m.reply('هذا الأمر للمجموعات فقط')
+  if (!isAdmin) return m.reply('⚠️ هذا الأمر للمشرفين فقط')
+  if (!isBotAdmin) return m.reply('البوت يحتاج يكون مشرف عشان يقدر يكتم')
+
+  let who = m.mentionedJid?.[0] || (m.quoted ? m.quoted.sender : null)
+  if (!who && text) who = text.trim()
+  if (!who) return m.reply(`منشن الشخص أو ارده\nمثال: ${usedPrefix + command} @منشن`)
+
+  who = getJid(who)
+  const owner = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : null
+  const bot = conn.user.jid
+
+  if (who === owner) return m.reply('لا يمكنك كتم أو فك كتم الأونر')
+  if (who === bot) return m.reply('ما أقدر أكتم نفسي ياخي')
+
+  // تهيئة بيانات المستخدم
+  if (!global.db.data.users[who]) global.db.data.users[who] = { muted: false, warns: 0 }
+  const user = global.db.data.users[who]
+
+  if (command === 'كتم') {
+    if (user.muted) return m.reply('هذا الشخص مكتوم من قبل')
+    user.muted = true
+    saveMutesToFile()
+
+    const txt = `
+*تم كتم العضو بنجاح* 🔇
+
+الشخص: @${who.split('@')[0]}
+الحالة: مكتوم نهائيًا
+المشرف: @${m.sender.split('@')[0]}
+`.trim()
+
+    await conn.sendMessage(m.chat, {
+      text: txt,
+      mentions: [who, m.sender]
+    }, { quoted: m })
+
+  } else if (command === 'فككتم' || command === 'فك-كتم') {
+    if (!user.muted) return m.reply('هذا الشخص مو مكتوم أصلاً')
+    user.muted = false
+    user.warns = 0
+    saveMutesToFile()
+
+    const txt = `
+*تم فك كتم العضو بنجاح* ✅
+
+الشخص: @${who.split('@')[0]}
+المشرف: @${m.sender.split('@')[0]}
+`.trim()
+
+    await conn.sendMessage(m.chat, {
+      text: txt,
+      mentions: [who, m.sender]
+    }, { quoted: m })
+  }
+}
+
+handler.help = ['كتم', 'فككتم']
+handler.tags = ['group']
+handler.command = /^(كتم|فككتم|فك-كتم)$/i
+handler.group = true
+handler.admin = true
+handler.botAdmin = true
+
+export default handler
+
+// =================== فلتر حذف رسائل المكتومين (before) ===================
+export async function before(m, { conn, isAdmin, isBotAdmin }) {
+  if (!m.isGroup || !m.key || m.fromMe || m.isBaileys) return true
+
+  const sender = getJid(m.sender)
+  if (!sender) return true
+
+  const user = global.db.data.users[sender]
+  if (!user?.muted) return true
+
+  try {
+    // حذف رسالة المكتوم فورًا
+    await conn.sendMessage(m.chat, {
+      delete: {
+        remoteJid: m.chat,
+        fromMe: false,
+        id: m.key.id,
+        participant: sender
+      }
+    })
+  } catch (e) {
+    console.log('فشل حذف رسالة المكتوم:', e)
+  }
+
+  return true // لا تكمل معالجة الرسالة
+}

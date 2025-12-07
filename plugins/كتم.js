@@ -1,195 +1,194 @@
-import fs from 'fs';
-import path from 'path';
+// ===[ Mute System 2026 – كتم مؤقت + دائم – بدون سبب – أقوى وأنظف ]===
+// ملف: plugins/mute.js
+// أوامر:
+// .كتم @منشن [الوقت]  → مثال: .كتم @20123456789 10m
+// .كتم @منشن          → كتم دائم
+// .فككتم @منشن
 
-// اسم ملف الحفظ المحلي (يمكن تغييره)
-const MUTES_FILE = path.join(process.cwd(), 'mutes.json');
+import fs from 'fs'
+import path from 'path'
 
-// مساعدة: تحميل حالة الكتم من ملف أو إنشاء ملف جديد
-function loadMutesFile() {
+const MUTES_FILE = path.join(process.cwd(), 'database', 'mutes.json')
+
+// تحميل + حفظ
+function loadMutes() {
   try {
     if (!fs.existsSync(MUTES_FILE)) {
-      fs.writeFileSync(MUTES_FILE, JSON.stringify({}, null, 2));
-      return {};
+      fs.mkdirSync(path.dirname(MUTES_FILE), { recursive: true })
+      fs.writeFileSync(MUTES_FILE, JSON.stringify({}, null, 2))
+      return {}
     }
-    const content = fs.readFileSync(MUTES_FILE, 'utf8');
-    return JSON.parse(content || '{}');
+    return JSON.parse(fs.readFileSync(MUTES_FILE, 'utf8') || '{}')
   } catch (e) {
-    console.error('Mute: failed to load mutes file', e);
-    return {};
+    console.error('خطأ تحميل الكتم:', e)
+    return {}
   }
 }
 
-function saveMutesFile(obj) {
+function saveMutes(data) {
   try {
-    fs.writeFileSync(MUTES_FILE, JSON.stringify(obj, null, 2));
+    fs.mkdirSync(path.dirname(MUTES_FILE), { recursive: true })
+    fs.writeFileSync(MUTES_FILE, JSON.stringify(data, null, 2))
   } catch (e) {
-    console.error('Mute: failed to save mutes file', e);
+    console.error('خطأ حفظ الكتم:', e)
   }
 }
 
-// بداية — تأكد من وجود مساحة للـ global.db.data إذا لم تكن موجودة
-if (!global.db) global.db = { data: { users: {}, settings: {} } };
-if (!global.db.data) global.db.data = { users: {}, settings: {} };
-
-// تحميل/مزامنة البيانات بين global.db.data.users و ملف MUTES_FILE
-const persisted = loadMutesFile();
-// Ensure every persisted entry exists in global.db.data.users
-for (const jid in persisted) {
-  if (!global.db.data.users[jid]) global.db.data.users[jid] = {};
-  global.db.data.users[jid].muto = !!persisted[jid].muto;
-  // keep warnings if present in persisted, otherwise default to 0 or existing value
-  if (typeof persisted[jid].warnings !== 'undefined') global.db.data.users[jid].warnings = persisted[jid].warnings;
-  if (typeof global.db.data.users[jid].warnings === 'undefined') global.db.data.users[jid].warnings = 0;
+// تنظيف الـ jid
+function cleanJid(jid) {
+  if (!jid) return null
+  if (jid.endsWith('@g.us') || jid.endsWith('@s.whatsapp.net')) return jid
+  if (/^\d+$/.test(jid)) return jid + '@s.whatsapp.net'
+  return jid
 }
 
-// helper: persist current mutes from global.db to file
-function persistMutesFromDb() {
-  const out = {};
+// تحويل الوقت: 10s, 5m, 2h, 1d
+function parseDuration(str) {
+  const match = str.match(/^(\d+)(s|m|h|d)$/i)
+  if (!match) return null
+  const num = parseInt(match[1])
+  const unit = match[2].toLowerCase()
+  return num * { s: 1000, m: 60000, h: 3600000, d: 86400000 }[unit]
+}
+
+// تنسيق الوقت المتبقي
+function formatTime(ms) {
+  if (ms < 60000) return `${(ms / 1000).toFixed(0)} ثانية`
+  if (ms < 3600000) return `${(ms / 60000).toFixed(0)} دقيقة`
+  if (ms < 86400000) return `${(ms / 3600000).toFixed(0)} ساعة`
+  return `${(ms / 86400000).toFixed(0)} يوم`
+}
+
+// تهيئة + مزامنة
+if (!global.db) global.db = { data: { users: {} } }
+if (!global.db.data.users) global.db.data.users = {}
+
+const saved = loadMutes()
+for (const jid in saved) {
+  if (!global.db.data.users[jid]) global.db.data.users[jid] = {}
+  global.db.data.users[jid].muted = !!saved[jid].muted
+  global.db.data.users[jid].mutedUntil = saved[jid].mutedUntil || null
+}
+
+function saveAll() {
+  const data = {}
   for (const jid in global.db.data.users) {
-    if (global.db.data.users[jid] && typeof global.db.data.users[jid].muto !== 'undefined') {
-      out[jid] = { muto: !!global.db.data.users[jid].muto, warnings: global.db.data.users[jid].warnings || 0 };
+    const u = global.db.data.users[jid]
+    if (u.muted || u.mutedUntil) {
+      data[jid] = { muted: !!u.muted, mutedUntil: u.mutedUntil || null }
     }
   }
-  saveMutesFile(out);
+  saveMutes(data)
 }
 
-// normalize jid (قبل استخدامه في المقارنات)
-function normalizeJid(jid) {
-  if (!jid) return jid;
-  if (jid.endsWith('@s.whatsapp.net') || jid.endsWith('@g.us')) return jid;
-  if (/^\d+$/.test(jid)) return jid + '@s.whatsapp.net';
-  return jid;
-}
+// =================== الأوامر ===================
+export default {
+  help: ['كتم', 'فككتم'],
+  tags: ['group'],
+  command: /^(كتم|فككتم|فك-كتم|unmute)$/i,
+  group: true,
+  admin: true,
+  botAdmin: true,
 
-// =================== كود الأوامر: كتم / فك-كتم ===================
-const handler = async (message, { conn, command, text, isAdmin }) => {
-  // لازم مشرف
-  if (!isAdmin) throw "👑 *فقط المسؤولين يمكنهم تنفيذ هذا الأمر*";
+  async handler(m, { conn, text, usedPrefix, command }) {
+    if (!m.isGroup) return m.reply('الأمر للجروبات فقط')
 
-  // الحصول على ال jid للهدف (ذكر/رد/كتابة)
-  let targetJid = message.mentionedJid && message.mentionedJid[0]
-    ? message.mentionedJid[0]
-    : message.quoted
-      ? message.quoted.sender
-      : text;
+    let who = m.mentionedJid?.[0] || (m.quoted ? m.quoted.sender : null)
+    if (!who && text) who = text.split(' ')[0]
+    if (!who) return m.reply(`منشن الشخص أو ارده\nمثال: ${usedPrefix}كتم @منشن 10m`)
 
-  if (!targetJid) {
-    return conn.reply(message.chat, "❗ *اذكر الشخص الذي ترغب في فك كتمه* ❗", message);
-  }
+    who = cleanJid(who)
+    const owner = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : null
+    const bot = conn.user.jid
 
-  targetJid = normalizeJid(targetJid.toString());
+    if (who === owner) return m.reply('ما أقدر أكتم الأونر')
+    if (who === bot) return m.reply('ما أقدر أكتم نفسي')
 
-  // مالك البوت (owner) — استخرج من global.owner الافتراضي عندك
-  const botOwner = (global.owner && global.owner[0] && global.owner[0][0]) ? (global.owner[0][0] + "@s.whatsapp.net") : null;
-  const botJid = conn?.user?.jid || conn?.user?.id || null;
+    if (!global.db.data.users[who]) global.db.data.users[who] = { muted: false, mutedUntil: null }
+    const user = global.db.data.users[who]
 
-  // لا تسمح بتغيير حالة الأونر ـــ الأونر لا يُكتم ولا يُفك كتمه (حماية صارمة)
-  if (botOwner && targetJid === botOwner) {
-    // نحافظ على نفس أسلوب الزخرفة في الرسائل
-    throw "😼 *لا يمكنك تغيير حالة كتم صاحب البوت — الأونر محمي دائماً.*";
-  }
+    // فك الكتم
+    if (/^فككتم|فك-كتم|unmute$/i.test(command)) {
+      if (!user.muted && !user.mutedUntil) return m.reply('هذا الشخص مو مكتوم')
 
-  // منع تغيير حالة البوت نفسه
-  if (botJid && targetJid === botJid) {
-    throw "❌️ *لا يمكنك كتم/فك كتم البوت نفسه*";
-  }
+      user.muted = false
+      user.mutedUntil = null
+      saveAll()
 
-  // تأكد من وجود بيانات للمستخدم في global.db
-  if (!global.db.data.users[targetJid]) {
-    global.db.data.users[targetJid] = { muto: false, warnings: 0 };
-  }
+      await m.reply(`
+تم فك كتم العضو بنجاح
 
-  const userData = global.db.data.users[targetJid];
+الشخص: @${who.split('@')[0]}
+المشرف: @${m.sender.split('@')[0]}
+      `.trim(), { mentions: [who, m.sender] })
 
-  if (command === "فك-كتم") {
-    if (!userData.muto) {
-      throw "😼 *هذا المستخدم ليس مكتومًا*";
+      return
     }
 
-    // فك الكتم وحذف التحذيرات
-    userData.muto = false;
-    userData.warnings = 0;
+    // كتم
+    if (command === 'كتم') {
+      if (user.muted || user.mutedUntil) return m.reply('هذا الشخص مكتوم من قبل')
 
-    // مزامنة للحفظ
-    persistMutesFromDb();
+      const timeArg = text.split(' ')[1]
+      const duration = timeArg ? parseDuration(timeArg) : null
+      const until = duration ? Date.now() + duration : null
+      const timeText = duration ? `لمدة ${formatTime(duration)}` : 'نهائيًا'
 
-    conn.reply(message.chat,
-      `*⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🎐❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*\n` +
-      `*✅ تم فك كتم هذا الشخص وحذف تحذيراته بنجاح*` + '\n' +
-      `*⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🎐❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*`,
-      message,
-      { mentions: [targetJid] }
-    );
+      user.muted = true
+      user.mutedUntil = until
+      saveAll()
 
-  } else if (command === "كتم") {
-    if (userData.muto) {
-      throw "😼 *هذا المستخدم تم كتمه بالفعل*";
+      await conn.sendMessage(m.chat, {
+        text: `
+تم كتم العضو بنجاح
+
+الشخص: @${who.split('@')[0]}
+المدة: ${timeText}
+المشرف: @${m.sender.split('@')[0]}
+        `.trim(),
+        mentions: [who, m.sender]
+      }, { quoted: m })
+    }
+  },
+
+  // فلتر حذف الرسائل + فك الكتم التلقائي
+  async before(m, { conn }) {
+    if (!m.isGroup || !m.key || m.fromMe || m.isBaileys) return true
+
+    const sender = cleanJid(m.sender)
+    if (!sender) return true
+
+    const user = global.db.data.users[sender]
+    if (!user) return true
+
+    // فك الكتم تلقائيًا
+    if (user.mutedUntil && Date.now() > user.mutedUntil) {
+      user.muted = false
+      user.mutedUntil = null
+      saveAll()
+
+      await conn.sendMessage(m.chat, {
+        text: `انتهى كتم @${sender.split('@')[0]} تلقائيًا`,
+        mentions: [sender]
+      }).catch(() => {})
     }
 
-    userData.muto = true;
-
-    // مزامنة للحفظ
-    persistMutesFromDb();
-
-    conn.reply(message.chat,
-      `*⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🔕❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*\n` +
-      `*✅ تم كتم هذا الشخص بنجاح*` + '\n' +
-      `*⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🔕❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*`,
-      message,
-      { mentions: [targetJid] }
-    );
-  }
-};
-
-handler.command = /^(كتم|فك-كتم)$/i;
-handler.group = true;
-handler.admin = true;
-handler.botAdmin = true;
-
-export default handler;
-
-// =================== فلتر عام لحذف رسائل المكتومين ===================
-// يمكنك وضع هذه الدالة في ملف before hook أو كملف plugin منفصل.
-// هنا نصّفها كـ export function before ليتم استدعاؤها تلقائياً إن دعم البوت ذلك.
-export async function before(m, { conn }) {
-  try {
-    if (!m || !m.key) return true; // لا تعمل إذا الرسالة فارغة
-
-    // تجاهل رسائل من البوت نفسه أو رسائل النظام
-    if (m.isBaileys && m.fromMe) return true;
-
-    // حوّل jid المرسل للصيغة الموحدة
-    const sender = normalizeJid(m.sender || (m.key && m.key.participant) || '');
-
-    // لا نفعل شيئًا إذا بيانات المستخدم غير موجودة
-    if (!sender) return true;
-
-    // load user data from global.db (أضمن مزامنة)
-    if (!global.db || !global.db.data || !global.db.data.users) return true;
-
-    const userData = global.db.data.users[sender];
-
-    // إذا المستخدم مكتوم — نحذف الرسالة فورًا
-    if (userData && userData.muto) {
+    if (user.muted || user.mutedUntil) {
       try {
-        // محاولة حذف الرسالة — تعريض للنسخ المختلفة من Baileys:
-        // شكل شائع يعمل في كثير من البوتات:
-        await conn.sendMessage(m.chat, { delete: m.key });
-
-        // بعض نسخ Baileys تحتاج الشكل التالي (احتياطي):
-        // await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, id: m.key.id, fromMe: false } });
-
+        await conn.sendMessage(m.chat, {
+          delete: {
+            remoteJid: m.chat,
+            fromMe: false,
+            id: m.key.id,
+            participant: sender
+          }
+        })
       } catch (e) {
-        // لو فشل الحذف، حاول إرسال تحذير بصيغة مخففة (لا نكسر البوت)
-        console.error('Mute filter: failed to delete message from muted user', e);
+        console.log('فشل حذف رسالة المكتوم:', e)
       }
-      // أوقف المعالجة الأخرى لهذه الرسالة
-      return true;
+      return true
     }
 
-    return true; // لا تخرّب مسار البوت إن لم يكن المكتوم
-  } catch (err) {
-    console.error('Mute before hook error:', err);
-    return true;
+    return true
   }
 }

@@ -1,0 +1,120 @@
+import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
+import fs from 'fs';
+
+const timeout = 60000;
+
+// ملف الأسئلة محلي (ضعه بجانب الكود أو في src/game)
+const QUESTIONS_PATH = './كورة.json';
+
+let questions = [];
+try {
+  const data = fs.readFileSync(QUESTIONS_PATH, 'utf-8');
+  questions = JSON.parse(data);
+  console.log(`تم تحميل ${questions.length} لاعب بنجاح`);
+} catch (err) {
+  console.error('خطأ في ملف كورة.json:', err.message);
+}
+
+let handler = async (m, { conn, command }) => {
+  if (command.startsWith('اجاب_')) {
+    let id = m.chat;
+    let game = conn.monte?.[id];
+
+    if (!game) return conn.reply(m.chat, '*╮───── • ◈ • ─────╭*\n*_لا توجد لعبة نشطة الان 📯📍_*\n*╮───── • ◈ • ─────╭*', m);
+
+    let num = parseInt(command.split('_')[1]);
+    if (isNaN(num) || num < 1 || num > 4) {
+      return conn.reply(m.chat, '*╮───── • ◈ • ─────╭*\n*_اختيار غير صالح يا اخي ❌_*\n*╮───── • ◈ • ─────╭*', m);
+    }
+
+    let selected = game.options[num - 1];
+    let correct = selected === game.correctAnswer;
+
+    if (correct) {
+      global.db.data.users[m.sender].exp += 500;
+      await conn.reply(m.chat, `*╮───── • ◈ • ─────╭*\n*_إجابة صحيحة مبروك ❄️✅_*\n*💰┊الجائزة┊⇇≺500xp≺*\n*╮───── • ◈ • ─────╭*`, m);
+    } else {
+      game.attempts--;
+      if (game.attempts > 0) {
+        await conn.reply(m.chat, `*╮───── • ◈ • ─────╭*\n*_إجابة خاطئة يا اخي 🛠️❌_*\n*_عدد المحاولات الباقية: ${game.attempts} 🙂📯_*\n*╯───── • ◈ • ─────╰*`, m);
+      } else {
+        await conn.reply(m.chat, `*╮───── • ◈ • ─────╭*\n*_إجابة خاطئة 😢_*\n*_انتهت محاولاتك 📯📍_*\n*❄️┊الإجابة الصحيحة┊⇇≺${game.correctAnswer}≺*\n*╯───── • ◈ • ─────╰*`, m);
+      }
+    }
+
+    clearTimeout(game.timer);
+    delete conn.monte[id];
+    return;
+  }
+
+  // بدء اللعبة
+  conn.monte = conn.monte || {};
+  let id = m.chat;
+
+  if (conn.monte[id]) {
+    return conn.reply(m.chat, '*╮───── • ◈ • ─────╭*\n*_فيه لعبة شغالة حالياً، خلّصها الأول! ❌❄️_*\n*╯───── • ◈ • ─────╰*', m);
+  }
+
+  if (questions.length === 0) {
+    return conn.reply(m.chat, 'ملف الأسئلة مش موجود أو فيه مشكلة', m);
+  }
+
+  const item = questions[Math.floor(Math.random() * questions.length)];
+  const { img, name } = item;
+
+  let options = [name];
+  while (options.length < 4) {
+    let rand = questions[Math.floor(Math.random() * questions.length)].name;
+    if (!options.includes(rand)) options.push(rand);
+  }
+  options.sort(() => Math.random() - 0.5);
+
+  const media = await prepareWAMessageMedia(
+    { image: { url: img || 'https://files.catbox.moe/84glfu.jpg' } },
+    { upload: conn.waUploadToServer }
+  );
+
+  const interactiveMessage = {
+    body: { text: `*╮───── • ◈ • ─────╭*\n*_لعبة مين هذا اللاعب؟ ⚽_*\n\n*⌝ معلومات اللعبة ┋🪄⌞ ⇊*\n*❄️┊الوقت┊⇇≺60 ثانية≺*\n*┊الجائزة┊⇇≺500xp≺*\n*╯───── • ◈ • ─────╰*` },
+    footer: { text: 'BY : Arthur' },
+    header: {
+      title: 'ㅤ',
+      subtitle: 'اختار اسم اللاعب الصحيح من الأزرار تحت',
+      hasMediaAttachment: true,
+      imageMessage: media.imageMessage,
+    },
+    nativeFlowMessage: {
+      buttons: options.map((opt, i) => ({
+        name: "quick_reply",
+        buttonParamsJson: JSON.stringify({
+          display_text: `${i + 1} - ${opt}`,   // نظيف 100% ← هذا اللي يخلي الزر يشتغل
+          id: `.اجاب_${i + 1}`
+        })
+      }))
+    }
+  };
+
+  const msg = generateWAMessageFromContent(m.chat, {
+    viewOnceMessage: { message: { interactiveMessage } }
+  }, { userJid: conn.user.jid, quoted: m });
+
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+
+  conn.monte[id] = {
+    correctAnswer: name,
+    options,
+    attempts: 2,
+    timer: setTimeout(async () => {
+      if (conn.monte[id]) {
+        await conn.reply(m.chat, `*╮───── • ◈ • ─────╭*\n*⌛ انتهى الوقت!*\n*❄️┊الإجابة الصحيحة┊⇇≺${name}≺*\n*╮───── • ◈ • ─────╭*`, m);
+        delete conn.monte[id];
+      }
+    }, timeout)
+  };
+};
+
+handler.help = ['لاعب', 'كورة', 'رياضة'];
+handler.tags = ['game'];
+handler.command = /^(لاعب|كور[هة]|رياض[هة]|اجاب_\d+)$/i;
+
+export default handler;

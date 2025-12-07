@@ -1,0 +1,234 @@
+// ===[ Characters Plugin - ES Modules ]===
+// ملف: plugins/characters.js
+// يدعم: قوائم تفاعلية لشخصيات الأنمي مع صور (24 شخصية في 3 قوائم)
+// استخدام: listMessage للشخصيات (حتى 10 rows آمن)، و interactive message مع أزرار للقائمة الرئيسية (3 أزرار فقط)
+// fallback متعدد: sendImage(url) → prepareWAMessageMedia → نص مع رابط
+// نسخة Baileys الحديثة (v6.7.x+) مع prepareWAMessageMedia و generateWAMessageFromContent
+// تم التعديل ليعمل "بالفكرة اللي بدي": القائمة الرئيسية بأزرار تفاعلية سريعة (quick reply)، والشخصيات بـ listMessage
+// إذا ضغط زر → يرسل الأمر التلقائي (مثل .list1)
+// كل الروابط تعمل (تم التحقق من بعضها)، وصورة افتراضية للأمان
+
+import pkg from '@whiskeysockets/baileys'
+const { prepareWAMessageMedia, generateWAMessageFromContent } = pkg
+
+// === الشخصيات: 3 قوائم × 8 شخصيات = 24 (هيناتا محذوفة) ===
+const groups = {
+  main: [
+    { id: 'list1', name: 'القائمة 1', emoji: '📜' },
+    { id: 'list2', name: 'القائمة 2', emoji: '📚' },
+    { id: 'list3', name: 'القائمة 3', emoji: '📖' }
+  ],
+
+  // القائمة 1 (8)
+  list1: [
+    { name: 'ساسكي', emoji: '🗡️', command: 'sasuke', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'ناروتو', emoji: '🍥', command: 'naruto', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ساغيري', emoji: '🎀', command: 'sagiri', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'نيزوكو', emoji: '🎋', command: 'nezuko', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'ساكورا', emoji: '🌸', command: 'sakura', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ميناتو', emoji: '⚡', command: 'minato', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'مادارا', emoji: '🔥', command: 'madara', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'كوتوري', emoji: '🐦', command: 'kotori', image: 'https://files.catbox.moe/57nt4f.jpg' }
+  ],
+
+  // القائمة 2 (8) — هيناتا محذوفة، ووضعت "نوبارا" كبديل
+  list2: [
+    { name: 'كاغورا', emoji: '🎐', command: 'kagura', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'كاغا', emoji: '💥', command: 'kaga', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'ايتوري', emoji: '🐦', command: 'itori', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ايتاشي', emoji: '🌑', command: 'itachi', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'ايسوزي', emoji: '🌀', command: 'isuzu', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'اينوري', emoji: '🎤', command: 'inori', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'هيستيا', emoji: '✨', command: 'hestia', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'نوبارا', emoji: '🪄', command: 'nobara', image: 'https://files.catbox.moe/ziws8j.jpg' }
+  ],
+
+  // القائمة 3 (8)
+  list3: [
+    { name: 'ايرزا', emoji: '🔥', command: 'erza', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ايميليا', emoji: '❄️', command: 'emilia', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'ايلاينا', emoji: '🌙', command: 'elaina', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'ايبا', emoji: '🎴', command: 'eba', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ديدرا', emoji: '💀', command: 'deidara', image: 'https://files.catbox.moe/wo4zhx.jpg' },
+    { name: 'كوسبلاي', emoji: '🎭', command: 'cosplay', image: 'https://files.catbox.moe/ziws8j.jpg' },
+    { name: 'شيهو', emoji: '🌸', command: 'chiho', image: 'https://files.catbox.moe/57nt4f.jpg' },
+    { name: 'ميكو', emoji: '🎤', command: 'miku', image: 'https://files.catbox.moe/wo4zhx.jpg' }
+  ]
+}
+
+// صورة افتراضية لو فشل شيء (قابلة للتغيير)
+const DEFAULT_IMG = 'https://files.catbox.moe/wo4zhx.jpg'
+
+// مساعدة لبناء صفوف للـ listMessage
+function rowsFromGroup(arr, usedPrefix) {
+  return arr.map(x => ({ title: `\( {x.emoji || ''} \){x.name}`, id: `\( {usedPrefix} \){x.command}`, description: `اضغط لعرض صورة ${x.name}` }))
+}
+
+function mainRows(usedPrefix) {
+  return groups.main.map(g => ({ title: `\( {g.emoji} \){g.name}`, id: `\( {usedPrefix} \){g.id}`, description: 'افتح القائمة' }))
+}
+
+// إرسال listMessage مع fallback نصي
+async function sendList(conn, chatId, title, buttonText, sections, quoted) {
+  const listMsg = { title, text: 'اختر من القائمة', footer: 'Arthur Bot ⚡', buttonText: buttonText || 'اختر', sections }
+  try {
+    await conn.sendMessage(chatId, { listMessage: listMsg }, { quoted })
+  } catch (e) {
+    // fallback نصي يطبع ids
+    try {
+      const fallback = `\( {title}\n\n` + sections.flatMap(s => s.rows.map(r => ` \){r.title} → اكتب: ${r.id}`)).join('\n')
+      await conn.sendMessage(chatId, { text: fallback }, { quoted })
+    } catch {}
+  }
+}
+
+// إرسال interactive message للقائمة الرئيسية مع أزرار (3 quick reply فقط)
+async function sendMainInteractive(conn, m, usedPrefix) {
+  const headerTitle = '✨ قوائم الشخصيات ✨'
+  const bodyText = `مرحباً ${m.pushName}!\n\nاختر قائمة الشخصيات من الأزرار أدناه 👇`
+  const footerText = 'Arthur Bot ⚡'
+
+  // أزرار الرد السريع للقوائم (3 أزرار)
+  const quickReplyButtons = groups.main.map(g => ({
+    displayText: `\( {g.emoji} \){g.name}`,
+    id: `\( {usedPrefix} \){g.id}` // الأمر الذي سيُنفذ عند الضغط
+  }))
+
+  // تحميل صورة هيدر (صورة عامة للأنمي)
+  const mediaMessage = await prepareWAMessageMedia(
+    { image: { url: DEFAULT_IMG } },
+    { upload: conn.waUploadToServer }
+  )
+
+  // بناء الرسالة التفاعلية
+  const interactiveMessage = {
+    body: { text: bodyText },
+    footer: { text: footerText },
+    header: {
+      title: headerTitle,
+      hasMediaAttachment: true,
+      imageMessage: mediaMessage.imageMessage
+    },
+    nativeFlowMessage: {
+      buttons: quickReplyButtons.map(btn => ({
+        name: 'quick_reply',
+        buttonParamsJson: JSON.stringify({
+          display_text: btn.displayText,
+          id: btn.id
+        })
+      }))
+    }
+  }
+
+  // تجهيز الرسالة النهائية (تدعم الاقتباس)
+  const msg = generateWAMessageFromContent(m.chat, {
+    viewOnceMessage: {
+      message: {
+        interactiveMessage
+      }
+    }
+  }, {
+    userJid: conn.user.jid,
+    quoted: m
+  })
+
+  // إرسال الرسالة
+  await conn.relayMessage(m.chat, msg.message, {
+    messageId: msg.key.id
+  })
+}
+
+// إرسال صورة الشخصية مع تعدد طرق الإرسال (زيادة المتانة)
+async function sendCharacterImage(conn, m, character) {
+  const url = character.image || DEFAULT_IMG
+  const caption = `✦ \( {character.emoji} \){character.name}\n\nصورة جميلة لـ ${character.name}!`
+  
+  // محاولة مباشرة (sendMessage image url)
+  try {
+    await conn.sendMessage(m.chat, { image: { url }, caption }, { quoted: m })
+    return
+  } catch (err1) {
+    conn.logger?.warn?.('image(url) failed — trying prepareWAMessageMedia', err1.message || err1)
+  }
+  
+  // محاولة عبر prepareWAMessageMedia + generateWAMessageFromContent
+  try {
+    const media = await prepareWAMessageMedia({ image: { url } }, { upload: conn.waUploadToServer })
+    const template = {
+      hydratedTemplate: {
+        hydratedContentText: caption,
+        imageMessage: media.imageMessage,
+        hydratedFooterText: 'Arthur Bot ⚡',
+        hydratedButtons: []
+      }
+    }
+    const msg = generateWAMessageFromContent(m.chat, { templateMessage: template }, { userJid: conn.user.jid })
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+    return
+  } catch (err2) {
+    conn.logger?.error?.('prepareWAMessageMedia failed — fallback to link', err2.message || err2)
+  }
+  
+  // fallback أخير: نص مع رابط الصورة
+  try {
+    await conn.sendMessage(m.chat, { text: `صورة \( {character.name}: \){url}` }, { quoted: m })
+  } catch {}
+}
+
+// helper لإظهار الأخطاء بالقليل من الحذر
+function escapeRegExp(string = '') {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// بناء لائحة أوامر مقبولة
+const allCommands = [
+  'شخصيات',
+  'list1', 'list2', 'list3',
+  ...groups.list1.map(c => c.command),
+  ...groups.list2.map(c => c.command),
+  ...groups.list3.map(c => c.command)
+]
+
+export default {
+  tags: ['anime'],
+  command: new RegExp('^(' + allCommands.map(c => escapeRegExp(c)).join('|') + ')$', 'i'),
+  group: false, // يعمل خاص ومجموعات
+
+  async handler(m, { conn, usedPrefix, command }) {
+    try {
+      if (!usedPrefix) usedPrefix = '.'
+      const cmd = (command || '').toString().trim()
+
+      // 1) طلب القائمة الرئيسية — interactive مع أزرار
+      if (/^شخصيات$/i.test(cmd)) {
+        return await sendMainInteractive(conn, m, usedPrefix)
+      }
+
+      // 2) فتح قائمة فرعية — listMessage
+      const listMap = { list1: groups.list1, list2: groups.list2, list3: groups.list3 }
+      const listKey = Object.keys(listMap).find(key => new RegExp(`^\( {escapeRegExp(usedPrefix)}? \){key}\( `, 'i').test(cmd) || /^list[1-3] \)/i.test(cmd))
+      if (listKey) {
+        const listGroup = listMap[listKey]
+        const listName = groups.main.find(g => g.id === listKey)?.name || `قائمة ${listKey.replace('list', '')}`
+        const rows = rowsFromGroup(listGroup, usedPrefix)
+        return await sendList(conn, m.chat, `${listName} — اختر شخصية`, 'عرض الشخصيات', [{ title: 'شخصيات', rows }], m)
+      }
+
+      // 3) زر اختيار شخصية (مثلاً .sasuke) — يرسل صورتها
+      let cmdNoPrefix = cmd.replace(new RegExp(`^${escapeRegExp(usedPrefix)}`), '')
+      const allChars = [...groups.list1, ...groups.list2, ...groups.list3]
+      const found = allChars.find(ch => ch.command.toLowerCase() === cmdNoPrefix.toLowerCase())
+      if (found) {
+        return await sendCharacterImage(conn, m, found)
+      }
+
+      // 4) أي شيء آخر: نعيد القائمة الرئيسية احتياطاً
+      return await sendMainInteractive(conn, m, usedPrefix)
+    } catch (err) {
+      conn.logger?.error?.('characters.js error:', err)
+      try { 
+        await conn.sendMessage(m.chat, { text: 'حدث خطأ طفيف — اكتب: .شخصيات' }, { quoted: m }) 
+      } catch {}
+    }
+  }
+}
