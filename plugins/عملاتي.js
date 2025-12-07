@@ -3,10 +3,11 @@ const handler = async (m, {usedPrefix}) => {
   if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
   else who = m.sender;
   const name = conn.getName(who);
+  const coins = Number(global.db.data.users?.[who]?.limit) || 0;
   m.reply(`
 ┓━━⊰ _🪙قائمه عملاتك🪙_ ⊱━━⊰
 ┣⊱⧪⟫ الاسـم : ${name}
-┣⊱⧪⟫ عـمـلاتـك : ${global.db.data.users[who].limit}
+┣⊱⧪⟫ عـمـلاتـك : ${coins}
 ┛━━━━━━⊰🪙🪙🪙⊱━━━━━⊰ـ
 لتعرف المزيد عن معلومات البوت اطلب 
 ❏ *.المتجر*

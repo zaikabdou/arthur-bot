@@ -28,7 +28,7 @@ const handler = async (_0x22faa1, { conn: _0x698bd1, text: _0x5a0279, usedPrefix
         'text': ("- الـصـوره الـمـراد الــبحث عـنـها : " + _0x5a0279).trim()
       },
       'footer': {
-        'text': "❯⏐ •  𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 | 🐼❤️) ء".trim()
+        'text': "❯⏐ •  𝙰𝚁𝚃_𝙱𝙾𝚃 | 🐼❤️) ء".trim()
       },
       'header': {
         'title': "* *الـتـحـميل مـن مـوقـع صور جوجل 🪩*",

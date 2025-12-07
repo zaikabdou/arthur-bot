@@ -1,100 +1,180 @@
-let rouletteBets = {}; // Object to store all the bets
-let rouletteResult = {}; // Object to store the result
+/**
+ * Roulette / رهان (أحمر / أسود)
+ *
+ * سلوك:
+ * - تضغط الرهان: .رهان <المبلغ> <اللون>
+ * - يخصم المبلغ فورًا كـ "احتجاز"
+ * - عند انتهاء الوقت: الفائز يحصل على مبلغ = 2 * رهان (يعني: يسترجع الرهان + ربح بمقدار الرهان)
+ * - الخاسر لا يسترجع شيء (المبلغ مسحوب بالفعل)
+ *
+ * إعدادات قابلة للتعديل أدناه.
+ */
+
+const rouletteState = {} // per chatId -> { bets: [], running: boolean, timerId: Timeout }
+
+const DEFAULT_DURATION = 10_000 // مده الجولة بالمللي ثانية (10s)
+const MIN_BET = 500
+const MAX_BET = 100000
+
+function normalizeColor(input) {
+  if (!input) return null
+  const c = input.toString().trim().toLowerCase()
+  if (["red", "أحمر", "احمر"].includes(c)) return "red"
+  if (["black", "أسود", "اسود"].includes(c)) return "black"
+  return null
+}
+
+function formatCurrency(n) {
+  return `${n}` // عدّل إن أردت فواصل أو رموز
+}
+
+async function resolveRouletteForChat(chatId, conn) {
+  const state = rouletteState[chatId]
+  if (!state || !state.bets || state.bets.length === 0) {
+    // تنظيف الحالة
+    if (state && state.timerId) clearTimeout(state.timerId)
+    delete rouletteState[chatId]
+    return
+  }
+
+  // اختَر اللون النهائي
+  const colors = ["red", "black"]
+  const resultColor = colors[Math.floor(Math.random() * colors.length)]
+
+  const winners = []
+  const losers = []
+  const mentions = []
+
+  // عملية الدفع: للفائزين نضيف 2 * amount (لأن المبلغ خصم مسبقاً)
+  for (const bet of state.bets) {
+    const userId = bet.user
+    // تأكد من وجود صف المستخدم
+    if (!global.db) global.db = { data: { users: {} } }
+    if (!global.db.data) global.db.data = { users: {} }
+    if (!global.db.data.users[userId]) global.db.data.users[userId] = { credit: 0 }
+
+    const userDB = global.db.data.users[userId]
+
+    if (bet.color === resultColor) {
+      const payout = bet.amount * 2
+      userDB.credit = (userDB.credit || 0) + payout
+      winners.push(`🟢 @${userId.split("@")[0]} ربح ${formatCurrency(payout)}`)
+      mentions.push(userId)
+    } else {
+      // الخاسر: المبلغ قد خصم عند الرهان، إذًا لا حاجة لخصم هنا
+      losers.push(`🔴 @${userId.split("@")[0]} خسر ${formatCurrency(bet.amount)}`)
+      mentions.push(userId)
+    }
+  }
+
+  // بناء رسالة النتيجة
+  let msg = `🎰 *نتيجة الروليت*\nالكرة هبطت على: *${resultColor === 'red' ? 'أحمر' : 'أسود'}*\n\n`
+  if (winners.length) {
+    msg += `🎉 *الفائزون:*\n${winners.join("\n")}\n\n`
+  } else {
+    msg += `❌ لا يوجد فائزين هذه الجولة.\n\n`
+  }
+
+  msg += `📉 *الخاسرون:*\n${losers.length ? losers.join("\n") : 'لا أحد'}`
+
+  // أرسل النتيجة مع mentions
+  try {
+    await conn.sendMessage(chatId, { text: msg, mentions }, { quoted: { key: { remoteJid: chatId, fromMe: false, id: 'roulette' }, message: { conversation: 'نتيجة الروليت' } } })
+  } catch (e) {
+    // احتياطي: ارسال بدون quoted
+    await conn.sendMessage(chatId, { text: msg, mentions })
+  }
+
+  // تنظيف الحالة
+  if (state.timerId) clearTimeout(state.timerId)
+  delete rouletteState[chatId]
+}
 
 const handler = async (m, { conn, args, usedPrefix, command }) => {
+  // تحقق بسيط
+  if (!args || args.length < 2) {
+    throw `✳️ الاستخدام الصحيح:\n${usedPrefix + command} <المبلغ> <اللون>\nمثال: ${usedPrefix + command} 500 أحمر`
+  }
 
+  // إعدادات
+  const chatId = m.chat
+  const sender = m.sender
 
-    /*if (global.db.data.users[m.sender].level < 5) {
-        return conn.reply(m.chat, 'You must be at least level 5 to use this command.', m);
-    }*/
+  // تأكد من وجود قاعدة البيانات للمستخدمين
+  if (!global.db) global.db = { data: { users: {} } }
+  if (!global.db.data) global.db.data = { users: {} }
+  if (!global.db.data.users[sender]) global.db.data.users[sender] = { credit: 0 }
 
-const resolveRoulette = (chatId, conn) => {
-    
-    let who = m.quoted ? m.quoted.sender : m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-    let username = conn.getName(who)
-    if (!(who in global.db.data.users)) throw `✳️ المستخدم غير موجود في قاعدة البيانات`
+  // قراءة المبلغ واللون
+  const amount = parseInt(args[0])
+  const color = normalizeColor(args[1])
 
-    if (rouletteBets[chatId] && rouletteBets[chatId].length > 0) {
-        let colores = ['red', 'black'];
-        let colour = colores[Math.floor(Math.random() * colores.length)];
+  if (isNaN(amount) || amount <= 0) throw '🔢 الرجاء إدخال مبلغ صالح بالارقام'
+  if (amount < MIN_BET) throw `✳️ الحد الأدنى للرهان هو ${MIN_BET}`
+  if (amount > MAX_BET) throw `🟥 الحد الأقصى للرهان هو ${MAX_BET}`
+  if (!color) throw '✳️ اختر لون صالح: أحمر أو أسود'
 
-        let winners = [];
-        let resultMessage = `الكرة هبطت على ${colour}\n\n🎉 الفائزين 🎉\n\n`;
+  const userDB = global.db.data.users[sender]
+  if ((userDB.credit || 0) < amount) throw '✳️ رصيدك غير كافٍ لوضع هذا الرهان'
 
-        for (let bet of rouletteBets[chatId]) {
-            let result = '';
-            if (colour === bet.color) {
-                result = `@${bet.user.split('@')[0]} won ${bet.amount}`;
-                global.db.data.users[bet.user].credit += bet.amount;
-                winners.push(result);
-            } else {
-                result = `@${bet.user.split('@')[0]} lost ${bet.amount}`;
-                global.db.data.users[bet.user].credit -= bet.amount;
+  // خصم المبلغ فورًا (حجز)
+  userDB.credit = (userDB.credit || 0) - amount
+
+  // تسجيل الرهان ضمن حالة الشات
+  if (!rouletteState[chatId]) {
+    rouletteState[chatId] = { bets: [], running: false, timerId: null }
+  }
+
+  rouletteState[chatId].bets.push({
+    user: sender,
+    amount,
+    color,
+    time: Date.now()
+  })
+
+  // الإقرار للمراهن
+  await m.reply(`✅ تم تسجيل رهانك: ${formatCurrency(amount)} على ${color === 'red' ? 'أحمر' : 'أسود'}\n⏳ يمكنك إضافة رهانات أخرى أو انتظر انتهاء الجولة.`)
+
+  // ابلاغ الشات بالحالة الإجمالية (اختياري: مجموع الرهانات على كل لون)
+  try {
+    const allBets = rouletteState[chatId].bets
+    const totalRed = allBets.filter(b => b.color === 'red').reduce((s, b) => s + b.amount, 0)
+    const totalBlack = allBets.filter(b => b.color === 'black').reduce((s, b) => s + b.amount, 0)
+
+    await conn.sendMessage(chatId, { text: `💰 مجموع الرهانات: أحمر=${formatCurrency(totalRed)} | أسود=${formatCurrency(totalBlack)}\n(ستبدأ النتيجة خلال ${Math.round(DEFAULT_DURATION/1000)} ثانية)` }, { quoted: m })
+  } catch (e) { /* تجاهل إذا فشل الإرسال الثانوي */ }
+
+  // تشغيل المؤقت مرة واحدة فقط لكل شات
+  if (!rouletteState[chatId].running) {
+    rouletteState[chatId].running = true
+    rouletteState[chatId].timerId = setTimeout(async () => {
+      try {
+        await resolveRouletteForChat(chatId, conn)
+      } catch (e) {
+        console.error('خطأ أثناء حل الروليت:', e)
+        // في حال فشل، نحاول إرسال رسالة خطأ وإرجاع المبالغ المحتجزة
+        try {
+          await conn.sendMessage(chatId, { text: 'حدث خطأ أثناء حساب نتيجة الروليت. سيتم استرجاع الرهانات.' }, { quoted: m })
+        } catch (_) {}
+        // استرجاع المبالغ للمقامرين
+        const state = rouletteState[chatId]
+        if (state && state.bets) {
+          for (const b of state.bets) {
+            if (global.db && global.db.data && global.db.data.users[b.user]) {
+              global.db.data.users[b.user].credit = (global.db.data.users[b.user].credit || 0) + b.amount
             }
+          }
         }
+        if (rouletteState[chatId] && rouletteState[chatId].timerId) clearTimeout(rouletteState[chatId].timerId)
+        delete rouletteState[chatId]
+      }
+    }, DEFAULT_DURATION)
+  }
+}
 
-        resultMessage += winners.join('\n');
-        if (winners.length === 0) {
-            resultMessage += 'لا يوجد فائزين';
-        }
+handler.help = ['رهان <المبلغ> <اللون>']
+handler.tags = ['economy']
+handler.command = ['رهان', 'roulette', 'bet']
+handler.group = true
 
-        rouletteResult[chatId] = resultMessage;
-        delete rouletteBets[chatId];
-
-        //conn.sendFile(m.chat, pp, 'gamble.jpg', resultMessage, m, false, { mentions: [who] })
-        conn.reply(m.chat, resultMessage, m, { mentions: [who] })
-        //m.reply(resultMessage)
-    }
-};
-
-const runRoulette = (chatId, conn) => {
-    const delay = 10 * 1000; // 30 seconds
-
-    setTimeout(() => {
-        resolveRoulette(chatId, conn);
-    }, delay);
-};
-
-const betRoulette = (user, chatId, amount, color) => {
-    let colores = ['red', 'black'];
-    if (isNaN(amount) || amount < 500) {
-        throw `✳️ الحد الأدنى للرهان هو 500 ذهب`;
-    }
-    if (!colores.includes(color)) {
-        throw '✳️ يجب عليك تحديد لون صالح: أحمر أو أسود';
-    }
-    if (users.credit < amount) {
-        throw '✳️ ليس لديك ما يكفي من الذهب!';
-    }
-    if (amount > 100000) {
-        throw `🟥 لا يمكنك المراهنة بمبلغ أكثر من 100000`;
-    }
-
-    if (!rouletteBets[chatId]) {
-        rouletteBets[chatId] = [];
-    }
-    rouletteBets[chatId].push({ user, amount, color });
-    return `✅ تم وضع رهانك بقيمة ${amount} ذهب على لون ${color}!`;
-};
-
-//const handler = async (m, { conn, args, usedPrefix, command }) => {
-    let amount = parseInt(args[0]);
-    let color = args[1]?.toLowerCase();
-    if (args.length < 2) {
-        throw `✳️ طريقة استخدام الأمر: ${usedPrefix + command} <المبلغ> <اللون>\n\n مثال: ${usedPrefix + command} 500 أحمر`;
-    }
-
-    let users = global.db.data.users[m.sender];
-    let response = betRoulette(m.sender, m.chat, amount, color);
-
-    m.reply(response);
-    runRoulette(m.chat, conn);
-};
-
-handler.help = ['gamble <amount> <color(red/black)>'];
-handler.tags = ['economy'];
-handler.command = ['رهان'];
-
-handler.group = true;
-
-export default handler;
+export default handler

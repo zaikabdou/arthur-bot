@@ -5,8 +5,8 @@ const uri = "mongodb+srv://itachi3mk:mypassis1199@cluster0.zzyxjo3.mongodb.net/?
 // إصلاح إعدادات Mongoose
 mongoose.set('strictQuery', false);
 mongoose.connect(uri)
-  .then(() => console.log("✅ تم الاتصال بـ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 بنجاح"))
-  .catch(error => console.error("❌ خطأ في الاتصال بـ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃:", error));
+  .then(() => console.log("✅ تم الاتصال بـ 𝙰𝚁𝚃_𝙱𝙾𝚃 بنجاح"))
+  .catch(error => console.error("❌ خطأ في الاتصال بـ 𝙰𝚁𝚃_𝙱𝙾𝚃:", error));
 
 const bk9Schema = new mongoose.Schema({
   groupId: String,

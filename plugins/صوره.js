@@ -64,7 +64,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
 
       'footer': proto.Message.InteractiveMessage.Footer.fromObject({
 
-        'text': "> ♡┆𖧷₊˚˖𓍢ִ🍓𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃.🎀༘⋆ﾟ＊┆♡ " // ضع العلامة المائية هنا
+        'text': "> ♡┆𖧷₊˚˖𓍢ִ🍓𝙰𝚁𝚃_𝙱𝙾𝚃.🎀༘⋆ﾟ＊┆♡ " // ضع العلامة المائية هنا
 
       }),
 
@@ -85,7 +85,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
           'name': "cta_url",
 
           'buttonParamsJson': "{\"display_text\":\"url 📫\",\"Url\":\"https://www.pinterest.com/search/pins/?rs=typed&q=" + text + "\",\"merchant_url\":\"https://www.pinterest.com/search/pins/?rs=typed&q=" + text + "\"}"
-
+see
         }]
 
       })
@@ -154,6 +154,6 @@ handler.help = ["pinterest"];
 
 handler.tags = ["downloader"];
 
-handler.command = /^(صوره|صورة|صور)$/i;
+handler.command = /^(صور)$/i;
 
 export default handler;

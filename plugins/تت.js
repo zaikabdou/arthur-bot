@@ -56,7 +56,7 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
   txt += `*\`⁘ الرقم التسلسلي:\`* ${sn}\n`;
   txt += `\`━━━━━━━━━━━━━━━━━━━━\``;
 
-  let dev = '*© تم بواسطة  𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*';
+  let dev = '*© تم بواسطة  𝙰𝚁𝚃_𝙱𝙾𝚃*';
 
   // إرسال الرسالة مع الصورة
   await conn.sendMessage(

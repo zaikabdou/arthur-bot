@@ -26,7 +26,7 @@ global.yukiJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.botname = "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃"
+global.botname = "𝙰𝚁𝚃_𝙱𝙾𝚃"
 global.textbot = "BY 『 𝙰𝙱𝙳𝙾𝚄 』"
 global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄"
 global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄"

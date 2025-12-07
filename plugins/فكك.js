@@ -21,7 +21,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 *｢🍄｣⇇ الوقت↜❪${(timeout / 1000).toFixed(2)}❫*
 *｢🍄｣⇇ الجائزة↜❪ ${poin}❫*
 *⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🍄❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*
-*｢⚡｣⇇ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*
+*｢⚡｣⇇ 𝙰𝚁𝚃_𝙱𝙾𝚃*
 *❍━━━══━━❪🍄❫━━══━━━❍*`.trim();
     conn.tekateki[id] = [
         await conn.reply(m.chat, caption, m),

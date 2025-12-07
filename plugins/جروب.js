@@ -35,7 +35,7 @@ let handler = async (m, { conn, args, usedPrefix, command, isAdmin, isOwner }) =
             { upload: conn.waUploadToServer }
         );
 
-        const dataMessage = `🍁 مـرحـبا بـك يا حـبـيـبـي الادمـن تـحـكم فـي مـجـمَوعـتك مـع 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 ⚡`;
+        const dataMessage = `🍁 مـرحـبا بـك يا حـبـيـبـي الادمـن تـحـكم فـي مـجـمَوعـتك مـع 𝙰𝚁𝚃_𝙱𝙾𝚃 ⚡`;
 
         let buttons = [
             {
@@ -59,7 +59,7 @@ let handler = async (m, { conn, args, usedPrefix, command, isAdmin, isOwner }) =
                 message: {
                     interactiveMessage: {
                         body: { text: dataMessage },
-                        footer: { text: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃' },
+                        footer: { text: '𝙰𝚁𝚃_𝙱𝙾𝚃' },
                         header: {
                             hasMediaAttachment: true,
                             imageMessage: thumbnail.imageMessage,

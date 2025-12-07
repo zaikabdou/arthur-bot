@@ -32,9 +32,9 @@ let handler = async (m, { conn }) => {
   }
 }
 
-handler.help = ['طقمي', 'تطقيم_بنات']
+handler.help = ['تطقيم', 'بناتي']
 handler.tags = ['anime']
-handler.command = /^(طقمي|تطقيم_بنات|ppcouple|ppcp)$/i
+handler.command = /^(تطقيم|ماتشينج)$/i
 handler.limit = true
 
 export default handler

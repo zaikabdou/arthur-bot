@@ -16,7 +16,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
             `🌺💫 ⇦ ≺ايـنـوري 🌺💫≻`,
             author,
             url,
-            [['عـرض الـمـزيـد 🔥🐉', `${usedPrefix + command}`]],
+            [['الـجـايه يـا ارثــــر ⚡', `${usedPrefix + command}`]],
             m
         );
 

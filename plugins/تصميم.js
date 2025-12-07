@@ -41,9 +41,13 @@ let handler = async (message, { conn, text }) => {
     // إرسال الفيديو
     await conn.sendMessage(message.chat, {
       video: { url: result.nowm }, // رابط الفيديو بدون علامة مائية
-      caption: `*🔹 تصميم مطلوب 🔹*\n\n📄 *العنوان*: ${result.title}\n🌐 *الرابط*: ${result.link}`
-    });
-  } catch (error) {
+// إزالة أي كلمة تحتوي # أو @
+let cleanTitle = result.title.split(' ')
+                             .filter(word => !word.includes('#') && !word.includes('@'))
+                             .join(' ');
+
+// تمرير العنوان المنظف للـ caption
+caption: `*⇦ ≺ ${cleanTitle}*\n\n> *© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*`
     // الرد في حالة وجود خطأ
     await conn.sendMessage(message.chat, { text: `⚠️ حدث خطأ أثناء البحث: ${error.message}` });
   }

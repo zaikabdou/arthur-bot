@@ -59,7 +59,7 @@ handler.before = async (m, { conn }) => {
 🏷️ ↜ *اسـم الـجـروب:* ${groupName}
 👥 ↜ *عـدد الاعـضـاء الان:* ${groupSize}
 ╯═────═⌘═────═╰
- 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃
+ 𝙰𝚁𝚃_𝙱𝙾𝚃
       `.trim()
 
       await conn.sendMessage(m.chat, {
@@ -78,7 +78,7 @@ handler.before = async (m, { conn }) => {
 👤 ↜ *مـنـشـن الـشـخص:* ${userMention}
 👥 ↜ *عـدد الاعـضـاء الان:* ${groupSize}
 ╯═────═⌘═────═╰
-𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃
+𝙰𝚁𝚃_𝙱𝙾𝚃
       `.trim()
 
       await conn.sendMessage(m.chat, {

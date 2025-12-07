@@ -158,7 +158,7 @@ async function sendFormatPicker(conn, m, { title, url, thumb, usedPrefix }) {
 
   const card = {
     body: { text: `🎵 *${title}*\n\nاختر الصيغة المطلوبة:` },
-    footer: { text: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃' },
+    footer: { text: '𝙰𝚁𝚃_𝙱𝙾𝚃' },
     header,
     nativeFlowMessage: { buttons, messageParamsJson: '' }
   }
@@ -182,7 +182,7 @@ async function sendQualityPicker(conn, m, { title, url, thumb, usedPrefix }) {
 
   const card = {
     body: { text: `🎬 *${title}*\n\nاختر دقّة الفيديو:` },
-    footer: { text: '≺𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃≻' },
+    footer: { text: '≺𝙰𝚁𝚃_𝙱𝙾𝚃≻' },
     header,
     nativeFlowMessage: { buttons: quick, messageParamsJson: '' }
   }

@@ -9,8 +9,7 @@ let text = `
 *╔⏤⏤🍄🌷🍄⏤⏤╗*
 『✨💖 معلومات القروب 💖✨』
 *╚⏤⏤🍄🌷🍄⏤⏤╝*
-
-🩷 *آيـدي الـقـروب:* ${groupMetadata.id}  
+ 
 💜 *إســم الـقـروب:* ${groupMetadata.subject}  
 💙 *عــدد الأعـضـاء:* ${participants.length}  
 💖 *مـالـك الـقـروب:* @${owner.split('@')[0]}  

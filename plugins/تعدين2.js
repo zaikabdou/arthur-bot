@@ -13,7 +13,7 @@ let fkontak = {
     }, 
     "participant": "0@s.whatsapp.net" 
 }
-let minar = `*🌟✨ رائع! لقد حصلت على*\n*𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*`
+let minar = `*🌟✨ رائع! لقد حصلت على*\n*𝙰𝚁𝚃_𝙱𝙾𝚃*`
 let pp = 'https://us.123rf.com/450wm/emojiimage/emojiimage1802/emojiimage180200332/95468325-mont%C3%B3n-de-piedras-preciosas-diamantes-azules-brillantes-concepto-de-joyas-caras-s%C3%ADmbolo-de-riqueza-d.jpg?ver=6'
 
 let d = Math.floor(Math.random() * 20)

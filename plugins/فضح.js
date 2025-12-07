@@ -7,7 +7,7 @@ var handler = async (m, { conn }) => {
     let mtype = (m.quoted.mtype || '').replace(/Message$/, '')
 
     if (mtype === 'image' || mtype === 'video') {
-        caption += '\n\n لا يسمح لك بإخفاء شيء هنا! هااا 🤫'
+        caption += '\n\n *لا يسمح لك بإخفاء شيء هنا! 🤫*'
     }
 
     await conn.sendMessage(m.chat, { 
@@ -18,6 +18,6 @@ var handler = async (m, { conn }) => {
 
 handler.help = ['readviewonce']
 handler.tags = ['media']
-handler.command = /^فضح|readviewonce|mirar$/i
+handler.command = /^فضح|افضح|افضحه$/i
 
 export default handler

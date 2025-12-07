@@ -59,7 +59,7 @@ ${sortedExp
 
 handler.help = ['الرتبة']
 handler.tags = ['xp']
-handler.command = /^(الرتبة|الترتيب|المتصدرين)$/i
+handler.command = /^(رتبة|الترتيب|المتصدرين)$/i
 
 export default handler
 

@@ -49,7 +49,7 @@ await m.react('✖️')
 await m.reply(`⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`)
 }}
 
-handler.command = ['instagram', 'ig', 'facebook', 'fb']
+handler.command = ['انستا', 'ig', 'فيس', 'fb']
 handler.tags = ['descargas']
 handler.help = ['انستا', 'ig', 'فيسبوك', 'fb']
 handler.group = true

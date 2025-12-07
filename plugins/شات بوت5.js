@@ -10,7 +10,7 @@ handler.all = async function (m) {
 
     let chat = global.db.data.chats[m.chat];
     let responses;
-   if (/^دييم$/i.test(m.text)) { 
+   if (/^دييييم$/i.test(m.text)) { 
      responses = [ 
  '*بعرف شايف 🙂‍↔️*'  
      ]; 
@@ -35,7 +35,7 @@ handler.all = async function (m) {
      ]; 
 } else if (/^وربي حلو|حلو وربي|حلوو حبيت|و ربي حلو$/i.test(m.text)) { 
      responses = [ 
-       '*♥🐥وعليكم السلام*',  
+       '*حلو مثلك 🥰*',  
      ]; 
      }else if (/^ميكاسا$/i.test(m.text)) { 
      responses = [ 
@@ -97,14 +97,14 @@ handler.all = async function (m) {
    ]; 
    }else if (/^قادح|مسوي قادح$/i.test(m.text)) { 
      responses = [ 
-'*تعليم ارثر🗿*',
+'*تعليمك*',
 '*بتمزح صح🙂💔*',
 '*ما ادري كيف تراه كيوت 🙃💔*',
 ]; 
    }else if (/^دز$/i.test(m.text)) { 
      responses = [ 
 '*😔☝️*',
-'*ما تروح على شغلك احسن*',
+'*اماا ما توقعت 😞*',
 '*راقب تحت🙄*',   ]; 
 
      }else if (/^نورك$/i.test(m.text)) { 
@@ -123,9 +123,12 @@ handler.all = async function (m) {
       '*تعليم ميكاسا*',
 '*ميكا 5 فريم✨*',
      ]; 
-     }else if (/^💋|🫦|💋💋$/i.test(m.text)) { 
+     }else if (/^💋|🫦|😘$/i.test(m.text)) { 
      responses = [ 
-       '*فديت البوسه💋*',  
+       '*فديت البوسة 🫦*',
+      '*اوف قربت اذوب 🫠*',
+      '*احلى منك ما في🥹*',
+'*💋🫦*', 
 
      ];
      }else if (/^عبدو$/i.test(m.text)) { 
@@ -140,24 +143,19 @@ handler.all = async function (m) {
      ];
      }else if (/^ساكو$/i.test(m.text)) { 
      responses = [ 
-       '*المز حقي 🫦*',  
+     '*دير بالك يتحرش بيك🐤*',
+      '*المز حقي🫦*',
+      '*اويليي لا تقول كرشت*',
+'*ممكن النمبر يا عنبر*', 
 
      ];
-     }else if (/^مدري|ما اعرف|مش فاهم$/ .test(m.text)) { 
-     responses = [ 
-       '*عبيد اخر زمن*',  
-     ];
+
        }else if (/^مز|مزه$/i.test(m.text)) { 
      responses = [ 
       '*ساكو اكثر 🫦*',
 '*تعليم ساكو*', 
      ];
-            }else if (/^انطم$/i.test(m.text)) { 
-     responses = [ 
-       '*انـت مـيـن عـشـان تـسـكـتـنـي😠*',
-      '*مـش هـسـكـت😝*',
-      '*اسـكـت انـت🙄*',
-     ];
+
    }
 
    // === ردود إضافية مضافة بنفس الصيغة كما طلبت ===
@@ -171,20 +169,11 @@ handler.all = async function (m) {
        '*افداك*',
        '*فداك الكون يا محوره🥺!*'
      ];
-   } else if (/^😂😂$|^😂$|^😂😂😂$|^😂😂😂😂ًا$/i.test(m.text)) {
-     responses = [
-       '*دووم لك يارب*',
-       '*دوم الضحكة على وجهك*'
-     ];
+
    } else if (/^ياويلي$|^اويلي$/i.test(m.text)) {
      responses = [
-       '*اعجبك صح 😉*',
-       '*تعرف تختار 😉*'
-     ];
-   } else if (/^ياخي$|^اووف$|^اوف$/i.test(m.text)) {
-     responses = [
-       '*شو بدك تدلل*',
-       '*حاضر قلّي وانا معاك*'
+       '*حلوة صح🐤*',
+       '*شكلي صرت اعرف 😺*'
      ];
    } else if (/^دوم$|^دوووم$/i.test(m.text)) {
      responses = [

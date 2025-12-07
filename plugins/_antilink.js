@@ -26,7 +26,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner, 
 
   // لو الأدمن أرسل الرابط → فقط تحذير بسيط
   if (isAdmin && chat.antiLink && text.includes(grupo)) {
-    return m.reply('*[ ☠️ ] مضاد روابط مفعل ~ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃_~ ، بس انت ادمن فمسموح لك [ ☠️ ]*');
+    return m.reply('*[ ☠️ ] مضاد روابط مفعل ~ 𝙰𝚁𝚃_𝙱𝙾𝚃_~ ، بس انت ادمن فمسموح لك [ ☠️ ]*');
   }
 
   // المرحلة الأساسية: اكتشاف رابط وطرد

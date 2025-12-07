@@ -49,7 +49,7 @@ let handler = async (m, { isROwner, usedPrefix, command, text }) => {
 // إعدادات المساعدة والتصنيف والأمر
 handler.help = ['createplugin'];
 handler.tags = ['owner'];
-handler.command = /^(gps|باتش-اضافه)$/i;
+handler.command = /^(باتش-اضافه)$/i;
 handler.rowner = true;
 
 export default handler;

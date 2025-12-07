@@ -14,9 +14,9 @@ const handler = async (m, { conn }) => {
     // إنشاء الرسالة التفاعلية
     const interactiveMessage = {
         body: { text: "*مـرًحـبا بـك فـي عـالـمـنـا مـعـك  〘  𝙰𝚁𝚃𝙷𝚄𝚁 〙*" },
-        footer: { text: "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃" },
+        footer: { text: "𝙰𝚁𝚃_𝙱𝙾𝚃" },
         header: { 
-            title: "❪🩸┇𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┇⚡❫", 
+            title: "❪🩸┇𝙰𝚁𝚃_𝙱𝙾𝚃┇⚡❫", 
             hasMediaAttachment: true, 
             imageMessage: media.imageMessage 
         },
@@ -32,7 +32,7 @@ const handler = async (m, { conn }) => {
                 {
                     name: "cta_url",
                     buttonParamsJson: JSON.stringify({
-                        display_text: "｢🍁┊القناة┊🍁｣",
+                        display_text: "｢🪶┊القناة┊🪶｣",
                         url: link2
                     })
                 },

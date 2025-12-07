@@ -5,7 +5,7 @@ import cheerio from 'cheerio'
 import { JSDOM } from "jsdom"
 
 let handler = async (m, { conn, text }) => {
-    if (!text) throw "هذا الامر خاص بعمل شعارات باسمك \nمثال:\n*.لوجو*\n> 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃"
+    if (!text) throw "هذا الامر خاص بعمل شعارات باسمك \nمثال:\n*.لوجو*\n> 𝙰𝚁𝚃_𝙱𝙾𝚃"
 
     try {
         await m.reply("⏳ جارِ إنشاء الشعار...")

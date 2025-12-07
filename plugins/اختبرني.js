@@ -315,7 +315,7 @@ const tips = [
    
 ] 
 const randomImage = tips[Math.floor(Math.random() * tips.length)];
-   var messa = await prepareWAMessageMedia({ image: { url:'https://files.catbox.moe/9qxiwh.jpg' } }, { upload: conn.waUploadToServer });
+   var messa = await prepareWAMessageMedia({ image: { url:'https://files.catbox.moe/9hh3k4.jpg' } }, { upload: conn.waUploadToServer });
 let msg = generateWAMessageFromContent(m.chat, {
   viewOnceMessage: {
     message: {
@@ -328,7 +328,7 @@ let msg = generateWAMessageFromContent(m.chat, {
             text: `*${randomImage}*\n*── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆*`
           }),
           footer: proto.Message.InteractiveMessage.Footer.create({
-            text: "ιтαcнι вσт"
+            text: "𝙰𝚁𝚃_𝙱𝙾𝚃"
           }),
           header: proto.Message.InteractiveMessage.Header.create({
             title: "*── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆*",

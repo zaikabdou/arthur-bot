@@ -1,11 +1,11 @@
 import { generateWAMessageFromContent } from "@whiskeysockets/baileys";
 
 const ownerJid = "213551217759@s.whatsapp.net"; // رقم المطور الأساسي
-const botName = "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃";
+const botName = "𝙰𝚁𝚃_𝙱𝙾𝚃";
 
 const subscriptions = {
     "جروب": {
-        title: "🤖 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 في جروبك",
+        title: "🤖 𝙰𝚁𝚃_𝙱𝙾𝚃 في جروبك",
         description: "🔹\n🌍 باقي الدول: رقم وهمي\n💎 الاشتراك: دائم"
     },
     "مملكة": {
@@ -13,7 +13,7 @@ const subscriptions = {
         description: "🔹 السعر:\n🌍 باقي الدول: رقمين وهميين"
     },
     "سكربت": {
-        title: "🛠️ سكربت 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃",
+        title: "🛠️ سكربت 𝙰𝚁𝚃_𝙱𝙾𝚃",
         description: "🔹 السعر:\n🌍 باقي الدول: 4 دولار"
     }
 };

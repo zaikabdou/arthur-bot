@@ -10,11 +10,11 @@ handler.all = async function (m) {
   let fake = {
     key: {
       fromMe: false,
-      participant: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃@s.whatsapp.net',
+      participant: '𝙰𝚁𝚃_𝙱𝙾𝚃@s.whatsapp.net',
       remoteJid: '120363384250924818@g.us',
     },
     message: {
-      conversation: '｢🩸┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚡｣'
+      conversation: '｢🩸┊𝙰𝚁𝚃_𝙱𝙾𝚃┊💧｣'
     },
     participant: '0@s.whatsapp.net',
   };
@@ -22,10 +22,6 @@ handler.all = async function (m) {
   // **الردود المسجلة**
   if (/^احا$/i.test(m.text)) { 
     conn.reply(m.chat, `*خدها و شلحها😆*`, fake);
-  }
-
-  if (/^دزمها$/i.test(m.text)) { 
-    conn.reply(m.chat, `*ما تدز امها انت اول بعدها تقولها*`, fake);
   }
 
   if (/^الحمدلله$/i.test(m.text)) { 
@@ -52,16 +48,8 @@ handler.all = async function (m) {
     conn.reply(m.chat, `*لم نفسك قبل ما انسي اني بوت  و امسح بيك ارض الشات😒🗿*`, fake);
   }
 
-  if (/^منور|منوره$/i.test(m.text)) { 
-    conn.reply(m.chat, `*بنوري انا 🫠💔*`, fake);
-  }
-
   if (/^بنورك|دا نورك|نورك الاصل|نور نورك$/i.test(m.text)) { 
     conn.reply(m.chat, `*بنوري انا 🫠🐦*`, fake);
-  }
-
-  if (/^امزح|بهزر$/i.test(m.text)) { 
-    conn.reply(m.chat, `*دمك تقيل متهزرش تاني😒*`, fake);
   }
 
   if (/^في اي|في ايه$/i.test(m.text)) { 
@@ -69,7 +57,7 @@ handler.all = async function (m) {
   }
 
   if (/^تست$/i.test(m.text)) { 
-    conn.reply(m.chat, `*𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 فـي الـخدمه 🥷🌹*`, fake);
+    conn.reply(m.chat, `*𝙰𝚁𝚃_𝙱𝙾𝚃 فـي الـخدمه 🫡🍀*`, fake);
   }
 
   if (/^شو تعمل|شو تسوي$/i.test(m.text)) { 
@@ -78,10 +66,6 @@ handler.all = async function (m) {
 
   if (/^انا جيت$/i.test(m.text)) { 
     conn.reply(m.chat, `*امشي تاني*`, fake);
-  }
-
-  if (/^حرامي|سارق$/i.test(m.text)) { 
-    conn.reply(m.chat, `*تتهم بريء بالسرقة من دون تحري او بحث عن حقيقة ليست ملموسة ارحنا واعمل شرطي ثم افتح فمك وثرثر فكلامك كـجاهل واحد بل جهلاً ارحم من حديثك تتصنع دور الشرطي وكأنك محقق بالله اصمت ولا تحرج نفسك ارحنا وارح أعصابك ان اكرمك الله بعقل فبسكوتك اقتل جهلك*`, fake);
   }
 
   if (/^ملل|مللل|ملللل|زهق$/i.test(m.text)) { 
@@ -96,22 +80,14 @@ handler.all = async function (m) {
     conn.reply(m.chat, `🐦`, fake);
   }
 
-  if (/^ايوا$/i.test(m.text)) { 
-    conn.reply(m.chat, `*بلاش ارد احسن🌝🤣*`, fake);
-  }
-
   if (/^نعم$/i.test(m.text)) { 
     conn.reply(m.chat, `*حد ناداك 🌚🐦*`, fake);
   }
 
   if (/^كيفك|شخبارك|علوك|عامل ايه|اخبارك|اي الدنيا$/i.test(m.text)) { 
-    conn.reply(m.chat, `*ملكش فيه🗿*`, fake);
+    conn.reply(m.chat, `*اسال عن حالك🐤*`, fake);
   }
 
-  if (/^🐤$/i.test(m.text)) { 
-    conn.reply(m.chat, `🐦`, fake);
-  }
-  
   if (/^تصبح علي خير|تصبحوا علي خير$/i.test(m.text)) { 
     conn.reply(m.chat, `وانت من اهل الخير حبيبي✨💜`, fake);
   }
@@ -120,21 +96,14 @@ handler.all = async function (m) {
     conn.reply(m.chat, `*اسكت بدل ما انادي ساكو يتحرش بيك*`, fake);
   }
    
-  if (/^🙂$/i.test(m.text)) { 
-    conn.reply(m.chat, `بص بعيد🙂`, fake);
-  }
-  
   if (/^بروح|سلام|باي$/i.test(m.text)) { 
-    conn.reply(m.chat, `*انقلع مين يطيقك 🗿*`, fake);
+    conn.reply(m.chat, `*على اساس كنت موجود 🐤*`, fake);
   }
    
   if (/^هلا$/i.test(m.text)) { 
     conn.reply(m.chat, `*اهلـيـن كـيـف حـالـك 🐤🌹*`, fake);
   }
 
-if (/^🦦$/i.test(m.text)) { 
-    conn.reply(m.chat, `🐧`, fake);
-  }
   if (/يا خرا|دانت خرا|خرا عليك$/i.test(m.text)) { 
     conn.reply(m.chat, `*يعم لما يبقا عندك  رجولة الاول تعالا اتكلم😂*`, fake);
   }

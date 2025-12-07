@@ -113,6 +113,6 @@ const handler = async (m, { conn, text }) => {
 
 handler.help = ['cleanup'];
 handler.tags = ['system'];
-handler.command = /^(صلح|ds)$/i;
+handler.command = /^(صلح|نظف)$/i;
 
 export default handler;

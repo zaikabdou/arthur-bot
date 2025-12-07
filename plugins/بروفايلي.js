@@ -36,7 +36,7 @@ let handler = async (m, { conn }) => {
 
   let txt = `
 *︶꒷꒦︶ ⭑ ...︶꒷꒦︶ ⭑ ...⊹*
-*𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*
+*𝙰𝚁𝚃_𝙱𝙾𝚃*
 *︶꒷꒦︶ ⭑ ...︶꒷꒦︶ ⭑ ...⊹*
 *╮ ⊰✫⊱─⊰✫⊱─⊰✫⊱╭*
 
@@ -59,7 +59,7 @@ let handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, {
     image: img,
     caption: txt,
-    footer: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃',
+    footer: '𝙰𝚁𝚃_𝙱𝙾𝚃',
     buttons: [
       { buttonId: `.اوامر`, buttonText: { displayText: '⚡ الأوامر' } },
       { buttonId: `.المطور`, buttonText: { displayText: '🩸 المطور' } }
@@ -70,6 +70,6 @@ let handler = async (m, { conn }) => {
 
 handler.help = ['بروفايل']
 handler.tags = ['start']
-handler.command = /^(بروفايل|برفايلي|perfil|profile|برفايل|برافايل)$/i
+handler.command = /^(بروفايل|برفايلي|perfil|profile|بروف|بروفايلي)$/i
 
 export default handler

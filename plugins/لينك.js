@@ -28,7 +28,7 @@ const handler = async (m, { conn, text, usedPrefix: prefijo }) => {
         // إعداد الرسالة التفاعلية
         const interactiveMessage = {
             body: { text: `*⊏─๋︩︪─๋︩︪─๋︩︪─๋︩︪─═͜⊐❪🍬❫⊏═─๋︩︪─๋︩︪─๋︩︪─๋︩︪─๋︩︪─⊐*`.trim() },
-            footer: { text: `❪🍧┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊🍥❫`.trim() },
+            footer: { text: `❪🍧┊𝙰𝚁𝚃_𝙱𝙾𝚃┊🍥❫`.trim() },
             header: {
                 title: `مرحبا يا: @${mentionId.split('@')[0]}`,
                 subtitle: `*هذه صورة مع زر النسخ*`,

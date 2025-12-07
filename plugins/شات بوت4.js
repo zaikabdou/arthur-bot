@@ -14,20 +14,15 @@ handler.all = async function (m) {
      responses = [ 
  '*مفيش مهان غيرك*'  
      ]; 
-}else if (/^ديم|دييييم$/i.test(m.text)) { 
+}else if (/^دييم|دييييم$/i.test(m.text)) { 
      responses = [ 
 '*تعليم عمك طبعا 🙂‍↔️*',
 '*طلعت بعرف انا🙂‍↔️*'
      ]; 
 }else if (/^عبد|يا عبد$/i.test(m.text)) { 
      responses = [ 
-'*مسوي قادح😘*',
+'*انا عبد لله 🐤*',
      ]; 
-}else if (/^امك$/i.test(m.text)) { 
-     responses = [ 
-'*😍*',
-'*الـلـه يـسـامـحـك 🙂*',
-'*ليش كذا 🙂*',
      ]; 
      }else if (/^اوكك|اوككك|اوكي|اوكيي|اوكييي$/i.test(m.text)) { 
      responses = [ 
@@ -43,27 +38,19 @@ handler.all = async function (m) {
      ]; 
      }else if (/^بوت عاق|عاق|بوت عبد|عبدي|العاق$/i.test(m.text)) { 
      responses = [ 
-'*انت العاق والعبد 🫵🏻*',
+'*طيب ورينا شغلك 🐤😉*',
      ]; 
-     }else if (/^سوبارو|شوكو|سونغ|ايانو|اكاي$/i.test(m.text)) { 
+     }else if (/^سونغ|ايانو|اكاي$/i.test(m.text)) { 
      responses = [ 
 '*اي حب شو تدور منه خير ان شاء الله 🙏🩵*',
-     ]; 
-     }else if (/^مو انت$/i.test(m.text)) { 
-     responses = [ 
-'*رافض تعترف بعمك 🙌*',
-     ]; 
+     ];  
    }else if (/^بخير|بخير الحمد لله $/i.test(m.text)) { 
      responses = [ 
 '*دايما يارب 💎🩵*',
      ]; 
-     }else if (/^كسم البوت|كسم بوت|كسمك يابوت$/i.test(m.text)) { 
-     responses = [ 
-'*كسمين امك يخول متشتمش البوت يعرص🫵🏻*',
-     ]; 
      }else if (/^روحي|حبي|حياتي$/i.test(m.text)) { 
      responses = [ 
-'*قلبو 💋❤️*',
+'*عيوني انت 🥹🐤*',
      ]; 
      }else if (/^بعشقك|بعشقكك|بعشقككك$/i.test(m.text)) { 
      responses = [ 
@@ -71,17 +58,11 @@ handler.all = async function (m) {
      ]; 
      }else if (/^قلبي|يقلبي|يقلبيي$/i.test(m.text)) { 
      responses = [ 
-'*قلب قلبك🌚✨*',
+'*فديتو قلبك😺🫶*',
      ]; 
  }else if (/^بوت علق$/i.test(m.text)) { 
      responses = [ 
 '*مفيش علق غيرك*',
-     ]; 
- }else if (/^🗿|🗿🗿|🗿🗿🗿$/i.test(m.text)) { 
-     responses = [ 
-'*مسوي بارد يا ولد*',
-      '*دزمها*', 
-      '*قول مياو*', 
      ]; 
  }else if (/^بوت عاق$/i.test(m.text)) { 
      responses = [ 
@@ -93,19 +74,14 @@ handler.all = async function (m) {
      ]; 
    }else if (/^مرتبط$/i.test(m.text)) { 
      responses = [ 
-'*هتشقطينى يبت 😂😁*',
+'*بيك طبعا 😣*',
    ]; 
-   }else if (/^بوت بتحبني؟|بوت بتحبنى$/i.test(m.text)) { 
+   }else if (/^تحبني|احبك$/i.test(m.text)) { 
      responses = [ 
 '*اموت فيك 🌚💔*',
 '*اكرهك🙂💔*',
 '*احبك نص حب 🙃💔*',
 ]; 
-   }else if (/^بوت بتكرهني؟$/i.test(m.text)) { 
-     responses = [ 
-'*ماعاش من يكرهكك حبي 🙁*',
-'*لا بس لا تتعب نفسك لحبك🫥*',
-'*ااه اكرهك🙄*',   ]; 
 
      }else if (/^هاي$/i.test(m.text)) { 
      responses = [ 
@@ -116,47 +92,21 @@ handler.all = async function (m) {
 '*بـدمـنـكككك💋*',
 '*بـعـشـقـكككك🥺*',
      ]; 
-   } else if (/^عيب|عيبب|يا عيب شوم|عيبببب$/i.test(m.text)) { 
-     responses = [ 
-'*بـرحـتـي🌚✨*',
-      '*مـفـيـش عـيـب بـيـنـا🙃*',
-      '*الـعـيـب فـالـجـيـب*',
-'*مـيـخـصـكـش✨*',
-     ]; 
+
      }else if (/^🌚|😉|🥹$/i.test(m.text)) { 
      responses = [ 
        '😘',  
 
      ];
-     }else if (/^تحبني$/i.test(m.text)) { 
-     responses = [ 
-       '🌚♥اكيد',  
-
-     ];
-     }else if (/^بتحبني|بتحبني؟|بتحبنيي$/i.test(m.text)) { 
-     responses = [ 
-       '*بـعـشقـككك💋✨*',  
-
-     ];
-     }else if (/^اسمع$/i.test(m.text)) { 
-     responses = [ 
-       '*لساتك صغير*',  
-
-     ];
+ 
      }else if (/^انت عسل|انت عسلل|انت عسللل$/ .test(m.text)) { 
      responses = [ 
        '*وانتي قمر🦦🫶🏻*',  
      ];
        }else if (/^خرا|كول خرا$/i.test(m.text)) { 
      responses = [ 
-      '*كله انت*',
-'*انت الي خرا*', 
-     ];
-            }else if (/^اسكت$/i.test(m.text)) { 
-     responses = [ 
-       '*انـت مـيـن عـشـان تـسـكـتـنـي😠*',
-      '*مـش هـسـكـت😝*',
-      '*اسـكـت انـت🙄*',
+      '*نعم الاخلاق*',
+'*تسلم عراسي*', 
      ];
    }
 
@@ -171,20 +121,15 @@ handler.all = async function (m) {
        '*واو حلو كتير💎*',
        '*يعطيك العافية على الذوق!*'
      ];
-   } else if (/^تمام$|^تمامن$|^تمامًا$/i.test(m.text)) {
+   } else if (/^تمام$|^يتم$|^تمامًا$/i.test(m.text)) {
      responses = [
-       '*تمام يابطل👌*',
-       '*تمام وتمام✌️*'
+       '*افراحك 🖤*',
+       '*سعادتك 🤍*'
      ];
    } else if (/^خلاص$|^خلص$/i.test(m.text)) {
      responses = [
-       '*طيب خلاص😂*',
-       '*على راحتك!*'
-     ];
-   } else if (/^شكو$|^شو فيه$|^شو بصير$/i.test(m.text)) {
-     responses = [
-       '*قولي يا جميل ايش في؟*',
-       '*حاضر قلّي وانا معاك*'
+       '*لا ليش خلاص🐤*',
+       '*افكر واشوف🤔!*'
      ];
    } else if (/^صباح الخير$|^صباحو$/i.test(m.text)) {
      responses = [

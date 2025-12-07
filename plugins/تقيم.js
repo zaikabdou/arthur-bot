@@ -10,7 +10,7 @@ const handler = async (message, { conn, text, usedPrefix }) => {
 
         const interactiveContent = {
             body: { text: '' },
-            footer: { text: "يمكنك إستخدامه عبر الاختيار من الاسفل\n*─[𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃]*🌟✨" },
+            footer: { text: "يمكنك إستخدامه عبر الاختيار من الاسفل\n*─[𝙰𝚁𝚃_𝙱𝙾𝚃]*🌟✨" },
             header: {
                 title: "مرحبا يا حب 👋 أتمنى أنك بخير ♥️\nالان يمكنك تقييم البوت لكي يتحسن اكثر",
                 subtitle: "خـلــيك صـــادق فــي تــقــيــمـك يا حب ❤️🥹\n\n\n\n.",

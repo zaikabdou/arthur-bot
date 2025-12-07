@@ -56,7 +56,7 @@ let handler = async (m, { conn }) => {
 
 handler.help = ['هديه', 'راتب']
 handler.tags = ['xp']
-handler.command = /^(هديه|راتب|abrircofre|cofreabrir)$/i
+handler.command = /^(هديه|راتب|هدية|يومي)$/i
 handler.level = 0
 
 export default handler

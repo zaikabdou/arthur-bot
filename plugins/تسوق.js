@@ -74,7 +74,7 @@ handler.before = async m => {
 
 handler.help = ['transfer'].map(v => v + ' [نوع] [كمية] [@تاج]')
 handler.tags = ['econ']
-handler.command = ['payxp','paydi', 'شراء', 'darxp','dardi',]
+handler.command = ['اشتري','paydi', 'شراء', 'darxp','تسوق',]
 
 handler.disabled = false
 

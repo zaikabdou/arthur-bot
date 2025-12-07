@@ -1,6 +1,8 @@
-import { prepareWAMessageMedia, generateWAMessageFromContent, getDevice } from '@whiskeysockets/baileys';
+import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
+
 let players = {};
 let currentQuiz = 0;
+
 let quizzes = [
     { question: "في أي فيلم نجد العبارة الشهيرة: 'أنا أبوك'؟", answer: "حرب النجوم", options: ["حرب النجوم", "هاري بوتر", "العراب", "تيتانيك"], hint: "الفيلم ينتمي إلى فئة الخيال العلمي." },
   { question: "من هو الممثل الذي لعب دور 'الرجل الحديدي' في عالم مارفل السينمائي؟", answer: "روبرت داوني جونيور", options: ["كريس إيفانز", "كريس هيمسوورث", "روبرت داوني جونيور", "مارك روفالو"], hint: "الممثل لعب دور عبقري وملياردير." },
@@ -71,102 +73,89 @@ let quizzes = [
   { question: "ما هو اسم أعمق حوض مائي في العالم؟", answer: "خندق ماريانا", options: ["خندق ماريانا", "خندق بورتو ريكو", "خندق ألاسكا", "خندق تومبوك"], hint: "أعمق نقطة في المحيط الهادئ." },
   { question: "ما هو أكبر بلد في العالم من حيث المساحة؟", answer: "روسيا", options: ["روسيا", "كندا", "الصين", "الولايات المتحدة"], hint: "بلد يمتد عبر قارتين." }
 ];
+
 const maxQuestions = 3;
-const questionTimeLimit = 60; // 60 ثانية بالمللي ثانية
+const questionTimeLimit = 60 * 1000; // 60 ثانية
 let timeoutId;
 
 let handler = async (m, { conn, command, text }) => {
-  switch (command) {
-    case 'مسلسلات':
-      players = {};
-      currentQuiz = 0;
-      conn.sendMessage(m.chat, '🎬 بدأت الفعالية! استعدوا للأسئلة حول الأفلام والمسلسلات. 🎬', { quoted: m });
-      askQuiz(conn, m);
-      break;
-    case 'اجابة':
-      let player = m.sender;
-      if (!players[player]) players[player] = { points: 0, attempts: 0 }; // إضافة عداد المحاولات
-      if (text.trim().toLowerCase() === quizzes[currentQuiz].answer.toLowerCase()) {
-        players[player].points += 1;
-        m.reply('✅ إجابة صحيحة! انتقل إلى السؤال التالي.');
-        players[player].attempts = 0; // إعادة ضبط المحاولات عند الإجابة الصحيحة
-        currentQuiz++;
-        if (currentQuiz < maxQuestions) {
-          askQuiz(conn, m);
-        } else {
-          conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
-        }
-      } else {
-        players[player].attempts += 1;
-        if (players[player].attempts < 3) {
-          m.reply('❌ إجابة خاطئة. حاول مرة أخرى.');
-        } else {
-          m.reply(`❌ إجابة خاطئة مرة أخرى. الإجابة الصحيحة كانت: 「 ${quizzes[currentQuiz].answer} 」`);
-          players[player].attempts = 0; // إعادة ضبط المحاولات بعد المحاولة الثانية
-          currentQuiz++;
-          if (currentQuiz < maxQuestions) {
+    switch (command) {
+        case 'مسلسلات':
+            players = {};
+            currentQuiz = 0;
+            conn.sendMessage(m.chat, '🎬 بدأت الفعالية! استعدوا للأسئلة حول الأفلام والمسلسلات. 🎬', { quoted: m });
             askQuiz(conn, m);
-          } else {
-            conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
-          }
-        }
-      }
-      break;
-    case 'نتيجة':
-      conn.reply(m.chat, '📊 النتائج الحالية:\n' + getLeaderboard(), m);
-      break;
-  }
+            break;
+
+        case 'اجابة':
+            let player = m.sender;
+            if (!players[player]) players[player] = { points: 0, attempts: 0 };
+            if (text.trim().toLowerCase() === quizzes[currentQuiz].answer.toLowerCase()) {
+                players[player].points += 1;
+                players[player].attempts = 0;
+                clearTimeout(timeoutId);
+                m.reply('✅ إجابة صحيحة! انتقل إلى السؤال التالي.');
+                currentQuiz++;
+                if (currentQuiz < maxQuestions) askQuiz(conn, m);
+                else conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
+            } else {
+                players[player].attempts += 1;
+                if (players[player].attempts < 3) {
+                    m.reply('❌ إجابة خاطئة. حاول مرة أخرى.');
+                } else {
+                    clearTimeout(timeoutId);
+                    m.reply(`❌ إجابة خاطئة. الإجابة الصحيحة كانت: 「 ${quizzes[currentQuiz].answer} 」`);
+                    players[player].attempts = 0;
+                    currentQuiz++;
+                    if (currentQuiz < maxQuestions) askQuiz(conn, m);
+                    else conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
+                }
+            }
+            break;
+
+        case 'نتيجة':
+            conn.reply(m.chat, '📊 النتائج الحالية:\n' + getLeaderboard(), m);
+            break;
+    }
 };
 
-var messa = await prepareWAMessageMedia({ image: { url: 'https://files.catbox.moe/wuri2d.jpg' } }, { upload: conn.waUploadToServer });
+const messa = await prepareWAMessageMedia({ image: { url: 'https://files.catbox.moe/wuri2d.jpg' } }, { upload: conn.waUploadToServer });
 
 const askQuiz = (conn, m) => {
-  let options = quizzes[currentQuiz].options.map((option, index) => ({
-    name: 'quick_reply',
-    buttonParamsJson: `{"display_text":"「 ${option} 」","id":".اجابة ${option}"}`
-  }));
-  const interactiveMessage = {
-          header: {
-            hasMediaAttachment: true,
-            imageMessage: messa.imageMessage,
-          },
-          body: {
-            text: quizzes[currentQuiz].question,
-          },
-          footer: {
-            text: 'ιтαcнι вσт'
-          },
-          nativeFlowMessage: {
-            buttons: options
-          }
-        };
+    let options = quizzes[currentQuiz].options.map(option => ({
+        buttonId: `.اجابة ${option}`,
+        buttonText: { displayText: `「 ${option} 」` },
+        type: 1
+    }));
 
-        let msg = generateWAMessageFromContent(m.chat, {
-            viewOnceMessage: {
-                message: {
-                    interactiveMessage,
-                },
-            },
-        }, { userJid: conn.user.jid, quoted: m })
-        conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id});
+    const interactiveMessage = {
+        type: 'buttonsMessage',
+        text: quizzes[currentQuiz].question,
+        footer: 'ιтαcнι вσт',
+        headerType: 4,
+        image: messa.imageMessage,
+        buttons: options
+    };
+
+    conn.sendMessage(m.chat, interactiveMessage, { quoted: m });
+    startTimer(conn, m);
 };
+
 const startTimer = (conn, m) => {
-  timeoutId = setTimeout(() => {
-    m.reply(`⏰ انتهى الوقت! الإجابة الصحيحة كانت: ${quizzes[currentQuiz].answer}`);
-    currentQuiz++;
-    if (currentQuiz < maxQuestions) {
-      askQuiz(conn, m);
-    } else {
-      conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
-    }
-  }, questionTimeLimit);
+    timeoutId = setTimeout(() => {
+        m.reply(`⏰ انتهى الوقت! الإجابة الصحيحة كانت: ${quizzes[currentQuiz].answer}`);
+        currentQuiz++;
+        if (currentQuiz < maxQuestions) askQuiz(conn, m);
+        else conn.sendMessage(m.chat, '🎉 انتهت الفعالية! إليكم النتائج النهائية:\n' + getLeaderboard(), { quoted: m });
+    }, questionTimeLimit);
 };
+
 const getLeaderboard = () => {
-  let leaderboard = '🏆 لوحة النتائج:\n';
-  for (let player in players) {
-    leaderboard += `👤 ${player}: ${players[player].points} نقاط\n`;
-  }
-  return leaderboard;
+    let leaderboard = '🏆 لوحة النتائج:\n';
+    for (let player in players) {
+        leaderboard += `👤 ${player}: ${players[player].points} نقاط\n`;
+    }
+    return leaderboard;
 };
 
 handler.command = /^(مسلسلات|اجابة|نتيجة)$/i;

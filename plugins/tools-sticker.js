@@ -36,7 +36,7 @@ await m.react('✅')
 
 handler.help = ['sticker']
 handler.tags = ['sticker']
-handler.command = ['سويه', 'متحرك']
+handler.command = ['ملصق', 'متحرك']
 
 export default handler
 

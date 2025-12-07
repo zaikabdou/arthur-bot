@@ -2,25 +2,36 @@ import FormData from "form-data";
 import Jimp from "jimp";
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
+    // خريطة من أوامر عربية إلى أسماء طرق المعالجة في الـ API
+    const methodMap = {
+        "إزالة_الضباب": "dehaze",
+        "إعادة_تلوين": "recolor",
+        "تحسين": "enhance",
+        "تمويه": "blur",
+        "توضيح": "sharpen"
+    };
+
+    // قائمة الأوامر الفرعية (تُعرض للمستخدم عند استخدام `تعديل` بدون معامل)
+    const subcommands = Object.keys(methodMap);
+    const subcommandList = subcommands.map((cmd, index) => `${index + 1}. ${cmd}`).join('\n');
+    const promptMessage = `اختر عملية من القائمة التالية:\n${subcommandList}\n\nاستخدم الأمر بالشكل التالي:\n${usedPrefix}تعديل <رقم_العملية>`;
+
     if (command === "تعديل") {
-        // عرض القائمة الفرعية للأوامر
-        const subcommands = ["إزالة_الضباب", "إعادة_تلوين", "تحسين", "تمويه", "توضيح"];
-        const subcommandList = subcommands.map((cmd, index) => `${index + 1}. ${cmd}`).join('\n');
-        const promptMessage = `اختر عملية من القائمة التالية:\n${subcommandList}\n\nاستخدم الأمر بالشكل التالي:\n${usedPrefix}تعديل <رقم_العملية>`;
-        if (!args[0]) {
-            return m.reply(promptMessage);
-        }
-        
-        const selectedIndex = parseInt(args[0]) - 1;
+        if (!args[0]) return m.reply(promptMessage);
+
+        const selectedIndex = parseInt(args[0], 10) - 1;
         if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= subcommands.length) {
             return m.reply(`اختيار غير صالح. ${promptMessage}`);
         }
-        
-        const selectedCommand = subcommands[selectedIndex];
-        return await handler(m, { conn, usedPrefix, command: selectedCommand, args: args.slice(1) });
+
+        const selectedArabic = subcommands[selectedIndex];
+        const mappedMethod = methodMap[selectedArabic]; // اسم الطريقة الإنجليزية
+        // تنفيذ العملية مباشرة بدون استدعاء handler نفسه
+        return await processImage(m, conn, mappedMethod, "*｢⚕️┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚕️｣*");
     } else {
-        // تنفيذ الأوامر الفرعية
-        await processImage(m, conn, command, "*｢⚕️┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚕️｣*");
+        // لو تم استدعاء أحد الأوامر الفرعية مباشرة مثل "تحسين"
+        const mappedMethod = methodMap[command] || command; // إذا كان المستخدم مرّر اسم إنجليزي فاتركه كما هو
+        await processImage(m, conn, mappedMethod, "*｢⚕️┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚕️｣*");
     }
 };
 
@@ -30,26 +41,29 @@ handler.command = ["تعديل", "إزالة_الضباب", "إعادة_تلوي
 export default handler;
 
 async function processImage(m, conn, method, caption) {
+    // تأكيد وجود مكان لتتبع العمليات على هذا الـ method
     conn[method] = conn[method] ? conn[method] : {};
     let q = m.quoted ? m.quoted : m;
     let mime = (q.msg || q).mimetype || q.mediaType || "";
-    if (!mime)
-        throw `أين هي الصورة؟`;
-    if (!/image\/(jpe?g|png)/.test(mime))
-        throw `النوع ${mime} غير مدعوم`;
-    else conn[method][m.sender] = true;
-    m.reply(wait);
+    if (!mime) throw `أين هي الصورة؟`;
+    if (!/image\/(jpe?g|png)/.test(mime)) throw `النوع ${mime} غير مدعوم`;
+
+    conn[method][m.sender] = true;
+
+    // رسالة انتظار احتياطية لو ما في متغير wait معرف
+    const waitMsg = typeof wait !== "undefined" ? wait : "⌛ جارٍ المعالجة...";
+    m.reply(waitMsg);
+
     let img = await q.download?.();
-    let error;
+    let error = false;
     try {
         const This = await processing(img, method);
-        conn.sendFile(m.chat, This, "", caption, m);
+        await conn.sendFile(m.chat, This, "result.jpg", caption, m);
     } catch (er) {
+        console.error(er);
         error = true;
     } finally {
-        if (error) {
-            m.reply("عملية فشلت :(");
-        }
+        if (error) m.reply("عملية فشلت :(");
         delete conn[method][m.sender];
     }
 }
@@ -57,22 +71,22 @@ async function processImage(m, conn, method, caption) {
 async function processing(urlPath, method) {
     return new Promise(async (resolve, reject) => {
         let Methods = ["enhance", "recolor", "dehaze", "blur", "sharpen"];
-        Methods.includes(method) ? (method = method) : (method = Methods[0]);
-        let buffer,
-            Form = new FormData(),
-            scheme = "https" + "://" + "inferenceengine" + ".vyro" + ".ai/" + method;
-        Form.append("model_version", 1, {
-            "Content-Transfer-Encoding": "binary",
-            contentType: "multipart/form-data; charset=uttf-8",
-        });
+        method = Methods.includes(method) ? method : Methods[0];
+
+        let Form = new FormData();
+        // حط القيمة كـ string/number عادي (الخيارات الثالثة ليست ضرورية هنا للقيم البسيطة)
+        Form.append("model_version", "1");
         Form.append("image", Buffer.from(urlPath), {
             filename: "enhance_image_body.jpg",
             contentType: "image/jpeg",
         });
+
+        const scheme = "https://inferenceengine.vyro.ai/" + method;
+
         Form.submit(
             {
                 url: scheme,
-                host: "inferenceengine" + ".vyro" + ".ai",
+                host: "inferenceengine.vyro.ai",
                 path: "/" + method,
                 protocol: "https:",
                 headers: {
@@ -82,18 +96,18 @@ async function processing(urlPath, method) {
                 },
             },
             function (err, res) {
-                if (err) reject();
+                if (err) return reject(err);
                 let data = [];
                 res
-                    .on("data", function (chunk, resp) {
+                    .on("data", function (chunk) {
                         data.push(chunk);
                     })
                     .on("end", () => {
                         resolve(Buffer.concat(data));
+                    })
+                    .on("error", (e) => {
+                        reject(e);
                     });
-                res.on("error", (e) => {
-                    reject();
-                });
             }
         );
     });

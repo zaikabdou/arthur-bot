@@ -11,7 +11,7 @@ let handler = async (m, { conn, command, args }) => {
   }
   handler.help = ['withdraw']
   handler.tags = ['economy']
-  handler.command = ['سحب', 'with', 'withdrawall', 'withall', 'wt' , 'wtall'] 
+  handler.command = ['سحب', 'with', 'اسحب', 'withall', 'wt' , 'استخراج'] 
   
   handler.disabled = false
   

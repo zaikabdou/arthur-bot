@@ -116,7 +116,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
                 text: `*╮ ⊰✫⊱─⊰✫⊱─⊰✫⊱╭*\n*┃ ${pin.title}*\n*┃\n*┘⊰✫⊱─⊰✫⊱─⊰✫⊱└*`
             }),
             footer: proto.Message.InteractiveMessage.Footer.fromObject({
-                text: '*𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*'
+                text: '*𝙰𝚁𝚃_𝙱𝙾𝚃*'
             }),
             header: proto.Message.InteractiveMessage.Header.fromObject({
                 title: `**الصورة ${i++}**`,
@@ -146,7 +146,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
                         text: '*︶꒷꒦︶ ⭑ ...︶꒷꒦︶ ⭑ ...⊹*\n**┃ اسـتـمـتـع بـمـا طـلـبـت  🥷**\n︶꒷꒦︶ ⭑ ...︶꒷꒦︶ ⭑ ...⊹'
                     }),
                     footer: proto.Message.InteractiveMessage.Footer.create({
-                        text: '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃'
+                        text: '𝙰𝚁𝚃_𝙱𝙾𝚃'
                     }),
                     header: proto.Message.InteractiveMessage.Header.create({
                         hasMediaAttachment: false

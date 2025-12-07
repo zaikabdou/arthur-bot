@@ -1,7 +1,7 @@
 let handler = async (m, { conn }) => {
   if (global.conn.user.jid === conn.user.jid) {
   } else {
-    await conn.reply(m.chat, `*تم إيقاف البوت الفرعي بنجاح. شكر لستخدامك 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃*`, m)
+    await conn.reply(m.chat, `*تم إيقاف البوت الفرعي بنجاح. شكر لستخدامك 𝙰𝚁𝚃_𝙱𝙾𝚃*`, m)
     conn.ws.close()
   }
 }

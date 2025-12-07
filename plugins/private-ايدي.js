@@ -6,6 +6,6 @@ conn.fakeReply(m.chat, sn, '0@s.whatsapp.net', '⬇️ *الرقم التسلس�
 }
 handler.help = ['myns']
 handler.tags = ['rg']
-handler.command = /^(myns|ceksn)|ايدي$/i
+handler.command = /^(myns|id)|ايدي$/i
 handler.register = true
 export default handler

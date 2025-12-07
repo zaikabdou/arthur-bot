@@ -27,7 +27,7 @@ let msg = generateWAMessageFromContent(m.chat, {
             text: `*${randomImage}*\n*── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆*`
           }),
           footer: proto.Message.InteractiveMessage.Footer.create({
-            text: "‹ ιтαcнι вσт"
+            text: "𝙰𝚁𝚃_𝙱𝙾𝚃"
           }),
           header: proto.Message.InteractiveMessage.Header.create({
             title: "*── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆ ── ⋆⋆*",

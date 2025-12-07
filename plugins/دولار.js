@@ -1,26 +1,55 @@
 let handler = async (m, { conn, text }) => {
-    let who
-    if (m.isGroup) who = m.mentionedJid[0]
-    else who = m.chat
-    if (!who) throw '✳️ من فضلك قم بعمل تاج للمستخدم'
-    let txt = text.replace('@' + who.split`@`[0], '').trim()
-    if (!txt) throw '✳️ قم بإدخال الكمية المراد إضافتها من *الدولارات*'
-    if (isNaN(txt)) throw '🔢 فقط الأرقام مسموح بها'
-    let dmt = parseInt(txt)
-    let exp = dmt
+  // قاعدة البيانات
+  const users = global.db && global.db.data && global.db.data.users
+  if (!users) throw '⚠️ خطأ: قاعدة البيانات غير متوفرة.'
 
-    if (exp < 1) throw '✳️ الحد الأدنى *1*'
-    let users = global.db.data.users
-    users[who].exp += dmt
+  // استخرج المستخدم (أول منشن) أو المستخدم المقتبس
+  const who =
+    (m.mentionedJid && m.mentionedJid[0]) ||
+    (m.quoted && m.quoted.sender)
 
-    await m.reply(`≡ *تمت الإضافة بنجاح*
+  if (!who) throw '✳️ من فضلك قم بعمل تاج للمستخدم أو رُد على رسالته.'
+
+  // تأكد من وجود صف للمستخدم في قاعدة البيانات
+  if (!users[who]) {
+    users[who] = { exp: 0 } // اضف حقول افتراضية حسب حاجتك
+  }
+
+  // احصل على الرقم من نص الأمر (يدعم إجراء: .دولار @user 500 أو .دولار 500)
+  if (!text || !text.trim()) throw '✳️ قم بإدخال الكمية المراد إضافتها من الدولارات.'
+  // نبحث عن أول رقم صحيح موجَب في النص
+  const match = text.match(/-?\d+/)
+  if (!match) throw '🔢 فقط الأرقام مسموح بها.'
+  const value = parseInt(match[0])
+  if (isNaN(value)) throw '🔢 فقط الأرقام مسموح بها.'
+  if (value < 1) throw '✳️ الحد الأدنى: 1'
+
+  // أضف القيمة
+  users[who].exp = (users[who].exp || 0) + value
+
+  // رسالة تأكيد للمُرسل
+  await m.reply(`≡ *تمت الإضافة بنجاح*
 ┌──────────────
-▢ *الإجمالي:* ${dmt}
+▢ *المبلغ:* ${value} دولار
+▢ *العضو:* @${who.split('@')[0]}
 └──────────────`)
-    conn.fakeReply(m.chat, `▢ هل تلقيت \n\n *+${dmt}* الدولارات؟`, who, m.text)
+
+  // رسالة تحقق/تنبيه للشخص المُستهدف (تستخدم mentions)
+  try {
+    await conn.sendMessage(
+      m.chat,
+      { text: `▢ هل تلقيت \n\n *+${value}* الدولارات؟`, mentions: [who] },
+      { quoted: m }
+    )
+  } catch (e) {
+    // احتياطي إن كانت مكتبة الاتصالات لا تدعم sendMessage بهذا الشكل
+    try {
+      await conn.sendFile(m.chat, Buffer.from(''), 'null', `▢ هل تلقيت \n\n *+${value}* الدولارات؟`, m)
+    } catch (_) { /* تجاهل */ }
+  }
 }
 
-handler.help = ['addgold <@مستخدم>']
+handler.help = ['addgold <@user>']
 handler.tags = ['اقتصاد']
 handler.command = ['دولار'] 
 handler.rowner = true

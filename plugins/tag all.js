@@ -37,9 +37,9 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
 
     const interactiveMessage = {
       body: { text: "✨ *اختر نوع المنشن الذي تريده:*" },
-      footer: { text: "𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃" },
+      footer: { text: "𝙰𝚁𝚃_𝙱𝙾𝚃" },
       header: {
-        title: "╭───⟢❲ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃 ❳╰───⟢",
+        title: "╭───⟢❲ 𝙰𝚁𝚃_𝙱𝙾𝚃 ❳╰───⟢",
         hasMediaAttachment: true,
         imageMessage: messa.imageMessage,
       },
@@ -56,7 +56,7 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
                     {
                       header: "｢🍄┊منشن_الكل┊🍄｣",
                       title: "*⧈─╼━╾╼━┇•❄️•┇━╾─╼╾─⧈*",
-                      description: "｢⚡┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚡｣",
+                      description: "｢⚡┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚡｣",
                       id: ".منشن_الكل"
                     }
                   ]
@@ -67,7 +67,7 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
                     {
                       header: "｢🍄┊منشن_اعضاء┊🍄｣",
                       title: "*⧈─╼━╾╼━┇•❄️•┇━╾─╼╾─⧈*",
-                      description: "｢⚡┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚡｣",
+                      description: "｢⚡┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚡｣",
                       id: ".منشن_اعضاء"
                     }
                   ]
@@ -78,7 +78,7 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
                     {
                       header: "｢🍄┊منشن_المشرفين┊🍄｣",
                       title: "*⧈─╼━╾╼━┇•❄️•┇━╾─╼╾─⧈*",
-                      description: "｢⚡┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚡｣",
+                      description: "｢⚡┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚡｣",
                       id: ".منشن_مشرفين"
                     }
                   ]
@@ -89,7 +89,7 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
                     {
                       header: "｢🍄┊منشن_مخفي┊🍄｣",
                       title: "*⧈─╼━╾╼━┇•❄️•┇━╾─╼╾─⧈*",
-                      description: "｢⚡┊𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃┊⚡｣",
+                      description: "｢⚡┊𝙰𝚁𝚃_𝙱𝙾𝚃┊⚡｣",
                       id: ".مخفي"
                     }
                   ]
@@ -139,28 +139,21 @@ let handler = async (m, { isOwner, isAdmin, conn, text, participants, args, comm
 ╮────────────────⟢ـ
 
 💠 *اسم المجموعة:* 『 ${groupName} 』
-📩 *الرسالة:* 『 ${pesan || '❌ لا توجد رسالة محددة ❌'} 』
 📅 *التاريخ:* 『 ${date} 』
 🕰️ *الوقت:* 『 ${time} 』
 👥 *عدد المستهدفين:* 『 ${filteredParticipants.length} 』
 
-─⟢ـ*
 > ˼⚕️˹↜ 🏷️ *قائمة الأعضاء* ↶
 ╮────────────────⟢ـ
 ${filteredParticipants.map(mem => `┊⟣｢@${mem.id.split('@')[0]}｣`).join('\n')}
 ╯────────────────⟢ـ
 
-─⟢ـ*
 > ˼⚕️˹↜ 👑 *مسؤول المنشن* ↶
 ╮────────────────⟢ـ
 ┊⟣｢@${m.sender.split('@')[0]}｣
 ╯────────────────⟢ـ
 
-─⟢ـ*
-> ˼⚕️˹↜ 🤖 *تحيات⇇ 𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃* ↶
-╮────────────────⟢ـ
-✨ *شكرًا لاستخدام خدماتنا! نعمل دائمًا لخدمتك.* ✨
-╯────────────────⟢ـ
+> ˼⚕️˹↜ 🤖 *تحيات⇇ 𝙰𝚁𝚃_𝙱𝙾𝚃* ↶
 `;
 
   conn.sendMessage(m.chat, {

@@ -20,7 +20,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   
   const imagurl = 'https://files.catbox.moe/whfhy5.jpg';
  
- let chname = '𝙰𝚁𝚃𝙷𝚄𝚁_𝙱𝙾𝚃';
+ let chname = '𝙰𝚁𝚃_𝙱𝙾𝚃';
  let chid = '120363421920252451@newsletter';
   
   const captain = `*⎙ نتائج البحث:* ${results.videos.length}\n\n*⛊ النتيجة:*\n*-› العنوان:* ${randomVideo.title}\n*-› الصانع:* ${randomVideo.author.name}\n*-› المشاهدات:* ${randomVideo.views}\n*-› الرابط:* ${randomVideo.url}\n*-› البوستر:* ${randomVideo.thumbnail}\n\n> 🗃️اختر من القائمه بالاسفل.\n\n`.trim();
@@ -113,7 +113,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   conn.sendFile(m.chat, tes[0].thumbnail, 'error.jpg', teks.trim(), m);      
   }    
 };
-handler.help = ['ytsearch <texto>'];
+handler.help = ['يوتيوب <نص>'];
 handler.tags = ['search'];
-handler.command = /^(ytsearch|yts|يوتيوب)$/i;
+handler.command = /^(يوت|يوتوب|يوتيوب)$/i;
 export default handler;
