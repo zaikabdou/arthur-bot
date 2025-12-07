@@ -1,52 +1,28 @@
-// ===[ قبول تلقائي للجميع – النسخة الملكية – شغال مع التفعيلات ]===
-// ملف: plugins/autoaccept.js
-// يشتغل مع: .فتح قبول_تلقائي   |   .قفل قبول_تلقائي
-
 export async function before(m, { conn, isBotAdmin }) {
   if (!m.isGroup || m.fromMe || m.isBaileys) return true
-
-  const chat = global.db.data?.chats?.[m.chat] || {}
+  const chat = global.db.data.chats[m.chat] || {}
   if (!chat.autoAceptar) return true
-
   if (!isBotAdmin) return true
 
   try {
-    const requests = await conn.groupRequestParticipantsList(m.chat).catch(() => [])
-    
-    if (requests.length === 0) return true
-
-    const allJids = requests
-      .filter(r => r.jid && r.jid.includes('@s.whatsapp.net'))
-      .map(r => r.jid)
-
-    if (allJids.length > 0) {
-      await conn.groupRequestParticipantsUpdate(m.chat, allJids, 'approve')
-
-      const reply = `
+    const requests = await conn.groupRequestParticipantsList(m.chat).catch(()=>[])
+    const jids = requests.filter(r=>r.jid&&r.jid.includes('@s.whatsapp.net')).map(r=>r.jid)
+    if (jids.length>0){
+      await conn.groupRequestParticipantsUpdate(m.chat, jids,'approve')
+      await conn.sendMessage(m.chat,{ text:`
 ❍━═━═━═━═━═━═━❍
 ❍⇇ تم قبول طلبات الانضمام تلقائيًا
-❍
-❍⇇ العدد ↜ ${allJids.length} عضو
-❍⇇ الجروب مفتوح للجميع في العالم
-❍
+❍⇇ العدد ↜ ${jids.length} عضو
 ❍⇇ بواسطة النظام التلقائي
 ❍━═━═━═━═━═━═━❍
-      `.trim()
-
-      await conn.sendMessage(m.chat, { text: reply })
+      `.trim()})
     }
 
-    // دعم إضافي: إشعار طلب جديد
-    if (m.messageStubType === 172 && m.messageStubParameters?.[0]) {
+    if (m.messageStubType===172 && m.messageStubParameters?.[0]){
       const jid = m.messageStubParameters[0]
-      if (jid.includes('@s.whatsapp.net')) {
-        await conn.groupRequestParticipantsUpdate(m.chat, [jid], 'approve').catch(() => {})
-      }
+      if (jid.includes('@s.whatsapp.net')) await conn.groupRequestParticipantsUpdate(m.chat,[jid],'approve').catch(()=>{})
     }
-
-  } catch (err) {
-    console.error('خطأ في القبول التلقائي:', err)
-  }
+  } catch(e){ console.error(e) }
 
   return true
 }

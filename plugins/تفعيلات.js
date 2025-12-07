@@ -1,4 +1,4 @@
-// ===[ التفعيلات – النسخة الملكية النهائية – محترفة + آمنة + ذكية 2026 ]===
+// ===[ التفعيلات – نسخة مُنقّحة – مطابق لهيكلتك ]===
 // ملف: plugins/enable.js
 
 const IMAGES = [
@@ -7,26 +7,22 @@ const IMAGES = [
   'https://files.catbox.moe/vss05f.jpg'
 ]
 
-// دالة حفظ الـ DB (تلقائي + آمن)
+// دالة حفظ آمنة للـ DB (لو موجودة)
 const saveDB = () => {
-  try {
-    if (global.db?.write) global.db.write()
-  } catch (e) {
-    console.error('خطأ في حفظ الـ DB:', e)
-  }
+  try { global.db?.write && global.db.write() } catch (e) { console.error('saveDB error:', e) }
 }
 
-const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin }) => {
-  const checkPerm = (group = true, admin = true, owner = false) => {
-    if (group && !m.isGroup) return m.reply('هذا الأمر للجروبات فقط')
-    if (admin && !(isAdmin || isOwner)) return m.reply('هذا الأمر للمشرفين فقط')
-    if (owner && !isOwner) return m.reply('هذا الأمر للمطور فقط')
-    return true
-  }
+// اختصار لفشل الصلاحيات (يعتمد على global.dfail إن موجود)
+const failPerm = (type, m, conn) => {
+  if (typeof global?.dfail === 'function') return global.dfail(type, m, conn)
+  // fallback بسيط
+  return conn.sendMessage?.(m.chat, { text: type === 'group' ? 'هذا الامر للجروبات فقط' : type === 'admin' ? 'هذا الامر للمشرفين فقط' : 'غير مسموح' }, { quoted: m }).catch(()=>{})
+}
 
-  // لو كتب .فتح بس → القائمة الملكية الراقية
-  if (!args[0]) {
-    const menu = `
+const handler = async (m, { conn, usedPrefix = '.', command = '', args = [], isOwner = false, isAdmin = false, isROwner = false }) => {
+  try {
+    // نص القائمة المفصل (عرض عند عدم وجود خيار)
+    const optionsFull = `
 ❍━═━═━═━═━═━═━❍
        ❍ تـفـعـيـلات الـمـجـمـوعـة ❍
 ❍━═━═━═━═━═━═━❍
@@ -41,122 +37,146 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin })
 *قبول_تلقائي*      ↜ قبول كل طلب انضمام
 *مضاد_الخاص*       ↜ حظر أي رسالة خاصة (للمطور)
 
-❍━═━═━═━═━═━═━❍
 الاستخدام:
-${usedPrefix}فتح مضاد_الإشراف
-${usedPrefix}قفل مضاد_البوت
+${usedPrefix}فتح الترحيب
+${usedPrefix}قفل مضاد_اللينكات
+❍━═━═━═━═━═━═━❍
+`.trim()
+
+    // تحديد النوع (يدعم مسافات _ و underscore)
+    const cmd = (command || '').toString().toLowerCase()
+    const type = (Array.isArray(args) ? args.join('_') : (args || []).join('_') || '').toLowerCase().replace(/\s+/g, '_')
+
+    // هل الفتح أو القفل
+    const isEnable = /^(فتح|فعل|enable|on|true|1)$/i.test(cmd)
+
+    // تأمين وصول الـ DB
+    const chat = global.db = global.db || {}
+    global.db.data = global.db.data || { chats: {}, users: {}, settings: {} }
+    const chats = global.db.data.chats
+    const users = global.db.data.users
+    const settings = global.db.data.settings
+
+    const chatObj = chats[m.chat] ||= {}
+    const userObj = users[m.sender] ||= {}
+    const botObj = settings[conn.user?.jid] ||= {}
+
+    // لو لم يكتب خيار نعرض القائمة
+    if (!type) {
+      return await conn.sendMessage(m.chat, {
+        image: { url: IMAGES[Math.floor(Math.random() * IMAGES.length)] },
+        caption: optionsFull
+      }, { quoted: m })
+    }
+
+    // تحويل aliases الشائعة إلى مفاتيح موحدة
+    const key = type
+      .replace(/^مضاد_?ال?لينكات2?$/, 'مضاد_اللينكات')
+      .replace(/^مضاد_?العرض$/, 'مضاد_العرض')
+      .replace(/^مضاد_?ال?شتائم$/, 'مضاد_الشتائم')
+      .replace(/^قبول_?تلقائي$/, 'قبول_تلقائي')
+      .replace(/^مضاد_?ال?خاص$/, 'مضاد_الخاص')
+      .replace(/^كشف2?$/, 'كشف')
+
+    let isAll = false
+
+    // تطبيق الإعدادات مع التحقق من الصلاحيات
+    switch (key) {
+      case 'الترحيب':
+        if (!m.isGroup && !isOwner) return failPerm('group', m, conn)
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.welcome = isEnable
+        break
+
+      case 'مضاد_اللينكات':
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.antiLink = isEnable
+        break
+
+      case 'كشف':
+        if (!m.isGroup && !isOwner) return failPerm('group', m, conn)
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.detect = isEnable
+        chatObj.detect2 = isEnable
+        break
+
+      case 'مضاد_العرض':
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.antiviewonce = isEnable
+        break
+
+      case 'مضاد_الإشراف':
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.antiAdmin = isEnable
+        break
+
+      case 'مضاد_البوت':
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.antiBot = isEnable
+        break
+
+      case 'مضاد_الشتائم':
+        if (m.isGroup && !(isAdmin || isOwner || isROwner)) return failPerm('admin', m, conn)
+        chatObj.antiToxic = isEnable
+        break
+
+      case 'قبول_تلقائي':
+        if (!isOwner && !isROwner) return failPerm('owner', m, conn)
+        isAll = true
+        botObj.autoAccept = isEnable
+        break
+
+      case 'مضاد_الخاص':
+        if (!isOwner && !isROwner) return failPerm('owner', m, conn)
+        isAll = true
+        botObj.antiPrivate = isEnable
+        break
+
+      default:
+        // غير معروف -> ارجاع القائمة
+        return await conn.sendMessage(m.chat, { text: optionsFull }, { quoted: m })
+    }
+
+    // حفظ التغييرات
+    saveDB()
+
+    // رسالة تأكيد مزخرفة
+    const displayOption = (args.length ? args.join(' ') : key)
+    const status = isEnable ? '*مفعّل*' : '*معطّل*'
+    const scope = isAll ? 'البوت كامل' : 'هذه الدردشة'
+    const action = isEnable ? 'تـم تـفـعـيـل' : 'تـم إيـقـاف'
+
+    const reply = `
+❍━═━═━═━═━═━═━❍
+❍⇇ ${action} الإعداد بنجاح
+❍
+❍⇇ الإعداد ↜ *${displayOption.replace(/_/g, ' ')}*
+❍⇇ الحالة  ↜ ${status}
+❍⇇ النطاق  ↜ *${scope}*
+❍
+❍⇇ بواسطة ↜ @${m.sender.split('@')[0]}
 ❍━═━═━═━═━═━═━❍
     `.trim()
 
     try {
       await conn.sendMessage(m.chat, {
         image: { url: IMAGES[Math.floor(Math.random() * IMAGES.length)] },
-        caption: menu
+        caption: reply,
+        mentions: [m.sender]
       }, { quoted: m })
     } catch (e) {
-      console.error('خطأ في إرسال القائمة:', e)
-      await m.reply('حدث خطأ في إرسال القائمة، حاول مرة أخرى')
+      try { await m.reply(reply) } catch {}
     }
-    return
-  }
 
-  const rawInput = args.join(' ').toLowerCase()
-  const isEnable = /^(فتح|enable|on|شغل|1)$/i.test(command)
-
-  const chat = global.db.data.chats[m.chat] ||= {}
-  const bot = global.db.data.settings?.[conn.user.jid] ||= {}
-  let isAll = false
-
-  // خريطة الاختصارات الذكية (سهلة + مرنة)
-  const keyMap = {
-    // كشف
-    'كشف': ['كشف', 'detect', 'detect1', 'detect2', 'كشف1', 'كشف2'],
-    // لينكات
-    'مضاد_اللينكات': ['مضاد_اللينكات', 'antilink', 'antiL', 'antiL2', 'لينك', 'link'],
-    // عرض مرة واحدة
-    'مضاد_العرض': ['مضاد_العرض', 'antiviewonce', 'viewonce', 'عرض', 'مرة'],
-    // إشراف
-    'مضاد_الإشراف': ['مضاد_الإشراف', 'antiadmin', 'admin', 'إشراف'],
-    // بوت
-    'مضاد_البوت': ['مضاد_البوت', 'antibot', 'bot', 'بوت'],
-    // شتائم
-    'مضاد_الشتائم': ['مضاد_الشتائم', 'antitoxic', 'toxic', 'شتائم', 'سب'],
-    // باقي الأوامر
-    'الترحيب': ['الترحيب', 'welcome'],
-    'اصوات': ['اصوات', 'audios', 'صوت'],
-    'قبول_تلقائي': ['قبول_تلقائي', 'autoaccept', 'قبول'],
-    'مضاد_الخاص': ['مضاد_الخاص', 'antiprivate', 'خاص']
-  }
-
-  let settingKey = null
-  for (const [key, aliases] of Object.entries(keyMap)) {
-    if (aliases.some(alias => rawInput.includes(alias))) {
-      settingKey = key
-      break
-    }
-  }
-
-  if (!settingKey) {
-    return m.reply('الخيار غير موجود!\nاكتب .فتح بس تشوف القائمة')
-  }
-
-  // تطبيق الإعدادات
-  switch (settingKey) {
-    case 'كشف':
-      if (checkPerm(true, true) !== true) return
-      chat.detect = isEnable
-      chat.detect2 = isEnable
-      break
-    case 'مضاد_اللينكات':
-      if (checkPerm(true, true) !== true) return
-      chat.antiLink = isEnable
-      chat.antiLink2 = isEnable
-      break
-    case 'الترحيب': case 'اصوات': case 'قبول_تلقائي':
-    case 'مضاد_العرض': case 'مضاد_الإشراف': case 'مضاد_البوت': case 'مضاد_الشتائم':
-      if (checkPerm(true, true) !== true) return
-      chat[settingKey] = isEnable
-      break
-    case 'مضاد_الخاص':
-      if (checkPerm(false, false, true) !== true) return
-      isAll = true
-      bot.antiPrivate = isEnable
-      break
-  }
-
-  saveDB() // حفظ تلقائي
-
-  const status = isEnable ? '*مفعّل*' : '*معطّل*'
-  const scope = isAll ? 'البوت كامل' : 'هذه الجروب'
-  const action = isEnable ? 'تـم تـفـعـيـل' : 'تـم إيـقـاف'
-
-  const reply = `
-❍━═━═━═━═━═━═━❍
-❍⇇ ${action} الإعداد بنجاح
-❍
-❍⇇ الإعداد ↜ *${settingKey.replace(/_/g, ' ')}*
-❍⇇ الحالة  ↜ ${status}
-❍⇇ النطاق  ↜ *${scope}*
-❍
-❍⇇ بواسطة ↜ @${m.sender.split('@')[0]}
-❍━═━═━═━═━═━═━❍
-  `.trim()
-
-  try {
-    await conn.sendMessage(m.chat, {
-      image: { url: IMAGES[Math.floor(Math.random() * IMAGES.length)] },
-      caption: reply,
-      mentions: [m.sender]
-    }, { quoted: m })
-  } catch (e) {
-    console.error('خطأ في إرسال رسالة التأكيد:', e)
-    await m.reply(reply).catch(() => {})
+  } catch (err) {
+    console.error('enable handler error:', err)
+    try { await m.reply('حصل خطأ غير متوقع — حاول لاحقًا') } catch {}
   }
 }
 
-handler.help = ['فتح', 'قفل']
+handler.help = ['فتح', 'قفل'].map(v => v + ' <الخيار>')
 handler.tags = ['group', 'owner']
-handler.command = /^(فتح|قفل|enable|disable|on|off)$/i
+handler.command = /^(فتح|قفل|فعل|enable|disable|en|dis)$/i
 handler.group = true
 
 export default handler

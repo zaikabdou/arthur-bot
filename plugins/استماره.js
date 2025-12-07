@@ -15,7 +15,7 @@ let handler = async (m, { command, text }) => m.reply(`*⧈─╼━╾╼━┇
 *ممنوع إختيار لقب مخالف لجنسك 🫵🏻*
 *⧈─╼━╾╼━┇•🌩️•┇━╾─╼╾─⧈*
 *┊❄️┊البوت:•⪼𝙰𝚁𝚃_𝙱𝙾𝚃*
-*┊❄️┊⇦تــ✍︎ــوقــيــع⇇𝙰𝚁𝚃_𝙱𝙾𝚃*`.trim(), null, m.mentionedJid ? {
+*┊❄️┊⇦تـوقـيــــ؏⇇𝙰𝚁𝚃_𝙱𝙾𝚃*`.trim(), null, m.mentionedJid ? {
   mentions: m.mentionedJid
 } : {})
 

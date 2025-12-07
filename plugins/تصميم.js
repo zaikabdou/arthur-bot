@@ -1,60 +1,68 @@
 import axios from 'axios';
 
-let sentVideos = new Set(); // لتخزين الفيديوهات التي تم إرسالها لتجنب التكرار
+let sentVideos = new Set(); // حافظ مؤقت لمنع تكرار الفيديوهات أثناء تشغيل الجلسة
 
 let handler = async (message, { conn, text }) => {
-  // إرسال رد فعل عند بدء البحث
-  await conn.sendMessage(message.chat, { react: { text: "🎥", key: message.key } });
-
-  // التحقق من إدخال النص
-  if (!text) {
-    return await conn.sendMessage(message.chat, { text: "⚠️ *الرجاء إدخال اسم الفيديو أو النص المطلوب للبحث عنه.*\n\nمثال: .تصميم سورة المؤمنون" });
-  }
-
-  // إضافة كلمة "تصميم" للنص المدخل
-  const query = `تصميم ${text}`;
-
   try {
-    // البحث عن الفيديو
-    let { data: response } = await axios.get(`https://apis-starlights-team.koyeb.app/starlight/tiktoksearch?text=${query}`);
-    let searchResults = response.data;
+    // تفاعل دخول البحث
+    await conn.sendMessage(message.chat, { react: { text: '🎥', key: message.key } });
 
-    // التحقق من وجود نتائج
-    if (!searchResults.length) {
-      return await conn.sendMessage(message.chat, { text: `⚠️ لم يتم العثور على نتائج لكلمة البحث: *${query}*` });
+    if (!text) {
+      return await conn.sendMessage(message.chat, {
+        text: "⚠️ *الرجاء إدخال اسم الفيديو أو النص المطلوب للبحث عنه.*\n\nمثال: .تصميم سورة المؤمنون"
+      }, { quoted: message });
     }
 
-    // فلترة الفيديوهات التي تم إرسالها بالفعل
-    let availableResults = searchResults.filter(result => !sentVideos.has(result.nowm));
+    const query = `تصميم ${text}`;
 
-    // إذا كانت كل الفيديوهات تم إرسالها بالفعل
+    // طلب الـ API
+    const { data: apiRes } = await axios.get(
+      `https://apis-starlights-team.koyeb.app/starlight/tiktoksearch?text=${encodeURIComponent(query)}`,
+      { timeout: 10000 }
+    );
+
+    // بعض الـ APIs تعيد data.data أو data مباشرة — نتعامل مع الاحتمالين
+    const searchResults = apiRes?.data ?? apiRes ?? [];
+
+    if (!Array.isArray(searchResults) || searchResults.length === 0) {
+      return await conn.sendMessage(message.chat, {
+        text: `⚠️ لم يتم العثور على نتائج لكلمة البحث: *${query}*`
+      }, { quoted: message });
+    }
+
+    // فلترة الفيديوهات التي تحتوي على رابط صالح ولم تُرسل من قبل
+    const availableResults = searchResults.filter(r => r && r.nowm && !sentVideos.has(r.nowm));
+
     if (availableResults.length === 0) {
-      return await conn.sendMessage(message.chat, { text: "⚠️ كل الفيديوهات تم إرسالها بالفعل." });
+      return await conn.sendMessage(message.chat, { text: "⚠️ كل الفيديوهات تم إرسالها بالفعل." }, { quoted: message });
     }
 
-    // اختيار فيديو عشوائي
-    let result = availableResults[Math.floor(Math.random() * availableResults.length)];
-
-    // إضافة الفيديو الذي تم إرساله إلى المجموعة لتجنب تكراره
+    const result = availableResults[Math.floor(Math.random() * availableResults.length)];
     sentVideos.add(result.nowm);
 
-    // إرسال الفيديو
-    await conn.sendMessage(message.chat, {
-      video: { url: result.nowm }, // رابط الفيديو بدون علامة مائية
-// إزالة أي كلمة تحتوي # أو @
-let cleanTitle = result.title.split(' ')
-                             .filter(word => !word.includes('#') && !word.includes('@'))
-                             .join(' ');
+    // تنظيف العنوان من أي هاشتاق أو منشن
+    const cleanTitle = (result.title || '')
+      .split(' ')
+      .filter(word => !word.includes('#') && !word.includes('@'))
+      .join(' ')
+      .trim() || 'تصميم';
 
-// تمرير العنوان المنظف للـ caption
-caption: `*⇦ ≺ ${cleanTitle}*\n\n> *© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*`
-    // الرد في حالة وجود خطأ
-    await conn.sendMessage(message.chat, { text: `⚠️ حدث خطأ أثناء البحث: ${error.message}` });
+    // إرسال الفيديو مع caption
+    await conn.sendMessage(message.chat, {
+      video: { url: result.nowm },
+      caption: `*⇦ ≺ ${cleanTitle}*\n\n> *© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*`
+    }, { quoted: message });
+
+  } catch (error) {
+    console.error('تصميم handler error:', error);
+    await conn.sendMessage(message.chat, {
+      text: `⚠️ حدث خطأ أثناء البحث: ${error?.message || String(error)}`
+    }, { quoted: message }).catch(() => {});
   }
 };
 
 handler.help = ['تصميم'];
 handler.tags = ['search'];
-handler.command = ['تصميم']; // اسم الأمر
+handler.command = ['تصميم'];
 
 export default handler;

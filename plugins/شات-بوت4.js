@@ -22,8 +22,7 @@ handler.all = async function (m) {
 }else if (/^عبد|يا عبد$/i.test(m.text)) { 
      responses = [ 
 '*انا عبد لله 🐤*',
-     ]; 
-     ]; 
+     ];
      }else if (/^اوكك|اوككك|اوكي|اوكيي|اوكييي$/i.test(m.text)) { 
      responses = [ 
 '*تمام 🙂🌚*'

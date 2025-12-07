@@ -1,8 +1,7 @@
-// ===[ Mute System 2026 – كتم مؤقت + دائم – بدون سبب – أقوى وأنظف ]===
+// ===[ Mute System 2026 – كتم دائم فقط – أقوى وأنظف ]===
 // ملف: plugins/mute.js
 // أوامر:
-// .كتم @منشن [الوقت]  → مثال: .كتم @20123456789 10m
-// .كتم @منشن          → كتم دائم
+// .كتم @منشن  → كتم دائم
 // .فككتم @منشن
 
 import fs from 'fs'
@@ -10,7 +9,7 @@ import path from 'path'
 
 const MUTES_FILE = path.join(process.cwd(), 'database', 'mutes.json')
 
-// تحميل + حفظ
+// تحميل + حفظ (بنية بسيطة: { "<jid>": { muted: true } })
 function loadMutes() {
   try {
     if (!fs.existsSync(MUTES_FILE)) {
@@ -42,41 +41,23 @@ function cleanJid(jid) {
   return jid
 }
 
-// تحويل الوقت: 10s, 5m, 2h, 1d
-function parseDuration(str) {
-  const match = str.match(/^(\d+)(s|m|h|d)$/i)
-  if (!match) return null
-  const num = parseInt(match[1])
-  const unit = match[2].toLowerCase()
-  return num * { s: 1000, m: 60000, h: 3600000, d: 86400000 }[unit]
-}
-
-// تنسيق الوقت المتبقي
-function formatTime(ms) {
-  if (ms < 60000) return `${(ms / 1000).toFixed(0)} ثانية`
-  if (ms < 3600000) return `${(ms / 60000).toFixed(0)} دقيقة`
-  if (ms < 86400000) return `${(ms / 3600000).toFixed(0)} ساعة`
-  return `${(ms / 86400000).toFixed(0)} يوم`
-}
-
-// تهيئة + مزامنة
+// تهيئة DB عامة لو مش موجودة
 if (!global.db) global.db = { data: { users: {} } }
+if (!global.db.data) global.db.data = { users: {} }
 if (!global.db.data.users) global.db.data.users = {}
 
 const saved = loadMutes()
 for (const jid in saved) {
   if (!global.db.data.users[jid]) global.db.data.users[jid] = {}
   global.db.data.users[jid].muted = !!saved[jid].muted
-  global.db.data.users[jid].mutedUntil = saved[jid].mutedUntil || null
 }
 
+// نحفظ فقط المستخدمين المكتومين (بنية بسيطة)
 function saveAll() {
   const data = {}
   for (const jid in global.db.data.users) {
     const u = global.db.data.users[jid]
-    if (u.muted || u.mutedUntil) {
-      data[jid] = { muted: !!u.muted, mutedUntil: u.mutedUntil || null }
-    }
+    if (u && u.muted) data[jid] = { muted: true }
   }
   saveMutes(data)
 }
@@ -95,7 +76,7 @@ export default {
 
     let who = m.mentionedJid?.[0] || (m.quoted ? m.quoted.sender : null)
     if (!who && text) who = text.split(' ')[0]
-    if (!who) return m.reply(`منشن الشخص أو ارده\nمثال: ${usedPrefix}كتم @منشن 10m`)
+    if (!who) return m.reply(`منشن الشخص أو ارده\nمثال: ${usedPrefix}كتم @منشن`)
 
     who = cleanJid(who)
     const owner = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : null
@@ -104,19 +85,19 @@ export default {
     if (who === owner) return m.reply('ما أقدر أكتم الأونر')
     if (who === bot) return m.reply('ما أقدر أكتم نفسي')
 
-    if (!global.db.data.users[who]) global.db.data.users[who] = { muted: false, mutedUntil: null }
+    if (!global.db.data.users[who]) global.db.data.users[who] = { muted: false }
+
     const user = global.db.data.users[who]
 
     // فك الكتم
     if (/^فككتم|فك-كتم|unmute$/i.test(command)) {
-      if (!user.muted && !user.mutedUntil) return m.reply('هذا الشخص مو مكتوم')
+      if (!user.muted) return m.reply('هذا الشخص مو مكتوم')
 
       user.muted = false
-      user.mutedUntil = null
       saveAll()
 
       await m.reply(`
-تم فك كتم العضو بنجاح
+✅ تم فك كتم العضو
 
 الشخص: @${who.split('@')[0]}
 المشرف: @${m.sender.split('@')[0]}
@@ -125,25 +106,19 @@ export default {
       return
     }
 
-    // كتم
+    // كتم دائم
     if (command === 'كتم') {
-      if (user.muted || user.mutedUntil) return m.reply('هذا الشخص مكتوم من قبل')
+      if (user.muted) return m.reply('هذا الشخص مكتوم من قبل')
 
-      const timeArg = text.split(' ')[1]
-      const duration = timeArg ? parseDuration(timeArg) : null
-      const until = duration ? Date.now() + duration : null
-      const timeText = duration ? `لمدة ${formatTime(duration)}` : 'نهائيًا'
-
+      // نتجاهل أي وسيط وقتي يُعطى ونطبّق كتم دائم
       user.muted = true
-      user.mutedUntil = until
       saveAll()
 
       await conn.sendMessage(m.chat, {
         text: `
-تم كتم العضو بنجاح
+✅ تم كتم العضو (دائم)
 
 الشخص: @${who.split('@')[0]}
-المدة: ${timeText}
 المشرف: @${m.sender.split('@')[0]}
         `.trim(),
         mentions: [who, m.sender]
@@ -151,7 +126,7 @@ export default {
     }
   },
 
-  // فلتر حذف الرسائل + فك الكتم التلقائي
+  // فلتر حذف الرسائل (الكتم الدائم فقط)
   async before(m, { conn }) {
     if (!m.isGroup || !m.key || m.fromMe || m.isBaileys) return true
 
@@ -159,22 +134,11 @@ export default {
     if (!sender) return true
 
     const user = global.db.data.users[sender]
-    if (!user) return true
+    if (!user || !user.muted) return true
 
-    // فك الكتم تلقائيًا
-    if (user.mutedUntil && Date.now() > user.mutedUntil) {
-      user.muted = false
-      user.mutedUntil = null
-      saveAll()
-
-      await conn.sendMessage(m.chat, {
-        text: `انتهى كتم @${sender.split('@')[0]} تلقائيًا`,
-        mentions: [sender]
-      }).catch(() => {})
-    }
-
-    if (user.muted || user.mutedUntil) {
-      try {
+    // حذف رسالة المكتوم (لن يكون هناك فك تلقائي — كتم دائم)
+    try {
+      if (typeof conn.sendMessage === 'function') {
         await conn.sendMessage(m.chat, {
           delete: {
             remoteJid: m.chat,
@@ -182,13 +146,13 @@ export default {
             id: m.key.id,
             participant: sender
           }
-        })
-      } catch (e) {
-        console.log('فشل حذف رسالة المكتوم:', e)
+        }).catch(() => {})
       }
-      return true
+    } catch (e) {
+      console.log('فشل حذف رسالة المكتوم:', e)
     }
 
+    // نمنع استمرار معالجة الرسالة بواسطة باقي الهاندلرز
     return true
   }
 }
