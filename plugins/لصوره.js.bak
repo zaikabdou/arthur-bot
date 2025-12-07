@@ -1,12 +1,6 @@
 import { webp2png } from '../lib/webp2mp4.js'
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
-import { Readable } from 'stream';
-
-async function toBuffer(stream) {
-  const chunks = [];
-  for await (const chunk of stream) chunks.push(chunk);
-  return Buffer.concat(chunks);
-}
+import { toBuffer } from 'stream/consumers'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
     const notStickerMessage = `✳️ قم بالرد على ملصق بـ:\n\n *${usedPrefix + command}*`
