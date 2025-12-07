@@ -31,7 +31,7 @@ async function handler(m, { conn, args, usedPrefix, command }) {
 _رد بـ *نعم* أو *لا*_
 `.trim()
 
-    //conn.sendButton(m.chat, confirm, fgig, null, [['نعم'], ['لا']], m, { mentions: [who] })
+    //conn.sendButton(m.chat, confirm, fgig, null, [['نعم'], ['لا'], m, { mentions: [who] })
     m.reply(confirm, null, { mentions: [who] })
     confirmation[m.sender] = {
         sender: m.sender,

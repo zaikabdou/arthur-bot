@@ -58,7 +58,7 @@ export default handler
 export async function yukiJadiBot(options) {
 let { pathYukiJadiBot, m, conn, args, usedPrefix, command } = options
 if (command === 'code') {
-command = 'qr'
+const command = 'qr'
 args.unshift('code')
 }
 const mcode = args[0] && /(--code|code)/.test(args[0].trim()) ? true : args[1] && /(--code|code)/.test(args[1].trim()) ? true : false
@@ -111,7 +111,7 @@ const { connection, lastDisconnect, isNewLogin, qr } = update
 if (isNewLogin) sock.isInit = false
 if (qr && !mcode) {
 if (m?.chat) {
-txtQR = await conn.sendMessage(m.chat, { image: await qrcode.toBuffer(qr, { scale: 8 }), caption: rtx.trim()}, { quoted: m})
+const txtQR = await conn.sendMessage(m.chat, { image: await qrcode.toBuffer(qr, { scale: 8 }), caption: rtx.trim()}, { quoted: m})
 } else {
 return 
 }
@@ -122,9 +122,9 @@ return
 } 
 if (qr && mcode) {
 let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
-secret = secret.match(/.{1,4}/g)?.join("-")
-txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
-codeBot = await m.reply(secret)
+const secret = secret.match(/.{1,4}/g)?.join("-")
+const txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
+const codeBot = await m.reply(secret)
 console.log(secret)
 }
 if (txtCode && txtCode.key) {
@@ -189,8 +189,8 @@ if (connection == `open`) {
 if (!global.db.data?.users) loadDatabase()
 await joinChannels(conn)
 let userName, userJid 
-userName = sock.authState.creds.me.name || 'Anónimo'
-userJid = sock.authState.creds.me.jid || `${path.basename(pathYukiJadiBot)}@s.whatsapp.net`
+const userName = sock.authState.creds.me.name || 'Anónimo'
+const userJid = sock.authState.creds.me.jid || `${path.basename(pathYukiJadiBot)}@s.whatsapp.net`
 console.log(chalk.bold.cyanBright(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒\n│\n│ ❍ ${userName} (+${path.basename(pathYukiJadiBot)}) conectado exitosamente.\n│\n❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`))
 sock.isInit = true
 global.conns.push(sock)
@@ -217,8 +217,8 @@ if (restatConn) {
 const oldChats = sock.chats
 try { sock.ws.close() } catch { }
 sock.ev.removeAllListeners()
-sock = makeWASocket(connectionOptions, { chats: oldChats })
-isInit = true
+const sock = makeWASocket(connectionOptions, { chats: oldChats })
+const isInit = true
 }
 if (!isInit) {
 sock.ev.off("messages.upsert", sock.handler)
@@ -231,7 +231,7 @@ sock.credsUpdate = saveCreds.bind(sock, true)
 sock.ev.on("messages.upsert", sock.handler)
 sock.ev.on("connection.update", sock.connectionUpdate)
 sock.ev.on("creds.update", sock.credsUpdate)
-isInit = false
+const isInit = false
 return true
 }
 creloadHandler(false)
@@ -242,12 +242,12 @@ function sleep(ms) {
 return new Promise(resolve => setTimeout(resolve, ms));}
 function msToTime(duration) {
 var milliseconds = parseInt((duration % 1000) / 100),
-seconds = Math.floor((duration / 1000) % 60),
-minutes = Math.floor((duration / (1000 * 60)) % 60),
-hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
-hours = (hours < 10) ? '0' + hours : hours
-minutes = (minutes < 10) ? '0' + minutes : minutes
-seconds = (seconds < 10) ? '0' + seconds : seconds
+const seconds = Math.floor((duration / 1000) % 60),
+const minutes = Math.floor((duration / (1000 * 60)) % 60),
+const hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
+const hours = (hours < 10) ? '0' + hours : hours
+const minutes = (minutes < 10) ? '0' + minutes : minutes
+const seconds = (seconds < 10) ? '0' + seconds : seconds
 return minutes + ' m y ' + seconds + ' s '
 }
 

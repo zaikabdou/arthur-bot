@@ -3,7 +3,7 @@
 // بدون sharp | يدعم كل الصيغ | حجم مضمون | شفافية محفوظة | قص مثالي
 
 import { fileTypeFromBuffer } from 'file-type'
-import { createCanvas, loadImage } from 'canvas'
+import { createCanvas, loadImage } from '@napi-rs/canvas'
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
 export default {

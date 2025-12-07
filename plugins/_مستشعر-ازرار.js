@@ -68,7 +68,7 @@ export async function all(m, chatUpdate) {
     const str2Regex = (str) => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
     const _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : global.prefix;
     const match = (_prefix instanceof RegExp ?
-      [[_prefix.exec(id), _prefix]] :
+      [[_prefix.exec(id), _prefix] :
       Array.isArray(_prefix) ?
         _prefix.map((p) => {
           const re = p instanceof RegExp ?
@@ -77,8 +77,8 @@ export async function all(m, chatUpdate) {
           return [re.exec(id), re];
         }) :
         typeof _prefix === 'string' ?
-          [[new RegExp(str2Regex(_prefix)).exec(id), new RegExp(str2Regex(_prefix))]] :
-          [[[], new RegExp]]
+          [[new RegExp(str2Regex(_prefix)).exec(id), new RegExp(str2Regex(_prefix))] :
+          [[[], new RegExp]
     ).find((p) => p[1]);
     if ((usedPrefix = (match[0] || '')[0])) {
       const noPrefix = id.replace(usedPrefix, '');
@@ -160,7 +160,7 @@ export async function all(m, chatUpdate) {
     const str2Regex = (str) => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
     const _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : global.prefix;
     const match = (_prefix instanceof RegExp ? // RegExp Mode?
-            [[_prefix.exec(id), _prefix]] :
+            [[_prefix.exec(id), _prefix] :
             Array.isArray(_prefix) ? // Array?
                 _prefix.map((p) => {
                   const re = p instanceof RegExp ? // RegExp in Array?
@@ -169,8 +169,8 @@ export async function all(m, chatUpdate) {
                   return [re.exec(id), re];
                 }) :
                 typeof _prefix === 'string' ? // String?
-                    [[new RegExp(str2Regex(_prefix)).exec(id), new RegExp(str2Regex(_prefix))]] :
-                    [[[], new RegExp]]
+                    [[new RegExp(str2Regex(_prefix)).exec(id), new RegExp(str2Regex(_prefix))] :
+                    [[[], new RegExp]
     ).find((p) => p[1]);
     if ((usedPrefix = (match[0] || '')[0])) {
       const noPrefix = id.replace(usedPrefix, '');

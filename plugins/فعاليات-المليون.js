@@ -46,7 +46,7 @@ export async function handler(m, { command, text, conn }) {
 
             global.db.data.users[m.sender].exp += totalPoints;
 
-            conn.sendButton(m.chat, `> *🎊 مبروك! لقد ربحت ${totalPoints} نقطة (بما في ذلك ${speedBonus} مكافأة السرعة)! المستوى الحالي: ${currentLevel}*`, null, null, [[`↬ السؤال التالي`, `.المليون`]], null, null);
+            conn.sendButton(m.chat, `> *🎊 مبروك! لقد ربحت ${totalPoints} نقطة (بما في ذلك ${speedBonus} مكافأة السرعة)! المستوى الحالي: ${currentLevel}*`, null, null, [[`↬ السؤال التالي`, `.المليون`], null, null);
 
             // التأكد من مستوى التقدم
             if (currentLevel === 5 || currentLevel === 10) {
@@ -127,7 +127,7 @@ export async function handler(m, { command, text, conn }) {
 
         } else if (text === 'انسحب') {
             clearTimeout(currentGame[3]);
-            conn.sendButton(m.chat, `> *تم الانسحاب بنجاح. الإجابة الصحيحة كانت: ${currentGame[1].response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`]], null, null);
+            conn.sendButton(m.chat, `> *تم الانسحاب بنجاح. الإجابة الصحيحة كانت: ${currentGame[1].response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`], null, null);
             delete conn.millionGame[id];
 
       } else if (text === 'الصدارة' && currentGame[5] > 0) {
@@ -148,7 +148,7 @@ ${index + 1}. ${user.name || 'مجهول'} - ${user.exp} نقاط`;
         } else {
             clearTimeout(currentGame[3]);
             m.react('❌');
-            conn.sendButton(m.chat, `> *❌ الإجابة خاطئة. الإجابة الصحيحة كانت: ${currentGame[1].response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`]], null, null);
+            conn.sendButton(m.chat, `> *❌ الإجابة خاطئة. الإجابة الصحيحة كانت: ${currentGame[1].response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`], null, null);
             delete conn.millionGame[id];
         }
 
@@ -158,7 +158,7 @@ ${index + 1}. ${user.name || 'مجهول'} - ${user.exp} نقاط`;
             startNewQuestion(conn, m, id, currentLevel, src);
         } else {
             m.react('👇🏻');
-            conn.sendButton(m.chat, `> *لعبة جديدة قد بدأت.*`, null, null, [[`↬ السؤال`, `.المليون`]], null, null);
+            conn.sendButton(m.chat, `> *لعبة جديدة قد بدأت.*`, null, null, [[`↬ السؤال`, `.المليون`], null, null);
         }
     }
 }
@@ -189,7 +189,7 @@ async function startNewQuestion(conn, m, id, level, src) {
 
     conn.millionGame[id] = [m, question, { startTime: Date.now() }, setTimeout(() => {
         delete conn.millionGame[id];
-        conn.sendButton(m.chat, `> *⏰ انتهى وقت اللعبة. الإجابة كانت: ${question.response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`]], null, null);
+        conn.sendButton(m.chat, `> *⏰ انتهى وقت اللعبة. الإجابة كانت: ${question.response}*`, null, null, [[`↬ لعبة جديدة`, `.المليون`], null, null);
     }, gameDuration), level, remainingHelps, remainingHints, remainingResponses, remainingReducedOptions];
 
     let message = `
