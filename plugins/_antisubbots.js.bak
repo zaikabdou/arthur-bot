@@ -90,10 +90,8 @@ export async function before(m, { conn, participants = [], isBotAdmin = false, i
     }
 
     if (detected) {
- const name = (typeof conn.getName === 'function' 
-  ? await conn.getName(m.sender).catch(() => null) 
-  : null) 
-  || m.sender.split('@')[0]
+      const name = (typeof conn.getName === 'function' ? await conn.getName(m.sender).catch(()=>null) : null) || m.sender.split('@')[0]
+
       const caption = `
 ❍━═━═━═━═━═━═━❍
 ❍⇇ تم اكتشاف بوت في المجموعة
