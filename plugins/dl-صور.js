@@ -16,7 +16,7 @@ import cheerio from 'cheerio'
     }
 
     // Mengirim 10 gambar secara acak
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
       let imageUrl = gambarUrls[i];
       let imageRes = await fetch(imageUrl);
       let imageBuffer = await imageRes.buffer();
