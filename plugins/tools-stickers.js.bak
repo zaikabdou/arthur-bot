@@ -42,7 +42,7 @@ const handler = async (m, { conn, text, args, command }) => {
         await m.react('✔️')
         break
 
-      case 'متحرك':
+      case 'ستكري':
         text = m.quoted?.text || text
         if (!text) return conn.reply(m.chat, '❌ ارسل نص او اقتبس رسالة', m)
         await m.react('🕒')
@@ -68,8 +68,8 @@ const handler = async (m, { conn, text, args, command }) => {
   }
 }
 
-handler.command = ['ثابت', 'متحرك', 'تعديل']
+handler.command = ['ثابت', 'ستكري', 'تعديل']
 handler.tags = ['ستكر']
-handler.help = ['ثابت', 'متحرك', 'تعديل']
+handler.help = ['ثابت', 'ستكري', 'تعديل']
 
 export default handler

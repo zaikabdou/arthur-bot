@@ -1,75 +1,95 @@
-import { sticker, addExif } from '../lib/sticker.js'
-import axios from 'axios'
+import { sticker } from '../lib/sticker.js'
 import fetch from 'node-fetch'
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-const جلبSticker = async (نص, محاولة = 1) => {
-  try {
-    const res = await axios.get('https://skyzxu-brat.hf.space/brat', { params: { text: نص }, responseType: 'arraybuffer' })
-    return res.data
-  } catch (e) {
-    if (e.response?.status === 429 && محاولة <= 3) {
-      const انتظر = e.response.headers['retry-after'] || 5
-      await delay(انتظر * 1000)
-      return جلبSticker(نص, محاولة + 1)
-    }
-    throw e
-  }
-}
-
-const جلبStickerفيديو = async نص => {
-  const res = await axios.get('https://skyzxu-brat.hf.space/brat-animated', { params: { text: نص }, responseType: 'arraybuffer' })
-  if (!res.data) throw new Error('لم يتم جلب الفيديو.')
-  return res.data
-}
-
-const handler = async (m, { conn, text, args, command }) => {
+const handler = async (m, { conn, text, command }) => {
   try {
     const user = m.sender
     const uData = global.db.data.users[user] || {}
-    const حقوق1 = uData.text1 || 'ستكر'
-    const حقوق2 = uData.text2 || 'بوت'
+    const pack = uData.text1 || 'ستكر'
+    const author = uData.text2 || 'بوت'
 
     switch (command) {
-      case 'ثابت':
-        text = m.quoted?.text || text
-        if (!text) return conn.reply(m.chat, '❌ ارسل نص او اقتبس رسالة', m)
+
+      // ===== بحث ستيكرات ===== //
+      case 'ستكري': {
+        if (!text) return conn.reply(m.chat, '❌ اكتب كلمة للبحث عن ستيكرات.\nمثال:\n.ستكري اكازا', m)
+
         await m.react('🕒')
-        const buf = await جلبSticker(text)
-        const st = await sticker(buf, false, حقوق1, حقوق2)
-        await conn.sendFile(m.chat, st, 'sticker.webp', '', m)
+
+        // API صور مجانية مع نتائج كثيرة
+        const url = `https://api.nekobot.xyz/image?type=anime&query=${encodeURIComponent(text)}`
+        const res = await fetch(url)
+        const json = await res.json()
+
+        if (!json || !json.message) {
+          await m.react('✖️')
+          return conn.reply(m.chat, '⚠︎ ما حصلت نتائج للكلمة.', m)
+        }
+
+        // النتيجة تكون صورة واحدة — فأرسل أكثر من 5 نتائج بالبحث العميق
+        const searchUrl = `https://api.waifu.im/search/?included_tags=${encodeURIComponent(text)}`
+        const s2 = await fetch(searchUrl)
+        const j2 = await s2.json()
+
+        // نجمع نتائج API 1 + API 2 معاً
+        const results = [
+          json.message,
+          ...(j2.images?.map(i => i.url) || [])
+        ].slice(0, 8) // حدّ أقصى 8 ستيكرات حتى ما يزعج القروب
+
+        if (!results.length) {
+          await m.react('✖️')
+          return conn.reply(m.chat, '⚠︎ لم يتم العثور على ستيكرات مناسبة.', m)
+        }
+
+        for (const src of results) {
+          try {
+            const st = await sticker(false, src, pack, author)
+            await conn.sendMessage(m.chat, { sticker: st }, { quoted: m })
+            await delay(900)
+          } catch { continue }
+        }
+
         await m.react('✔️')
         break
+      }
 
-      case 'ستكري':
-        text = m.quoted?.text || text
-        if (!text) return conn.reply(m.chat, '❌ ارسل نص او اقتبس رسالة', m)
+      // ===== أمر ثابت ===== //
+      case 'ثابت': {
+        const نص = m.quoted?.text || text
+        if (!نص) return conn.reply(m.chat, '❌ ارسل نص أو اقتبس رسالة.', m)
+
         await m.react('🕒')
-        const vBuf = await جلبStickerفيديو(text)
-        const stv = await sticker(vBuf, null, حقوق1, حقوق2)
-        await conn.sendMessage(m.chat, { sticker: stv }, { quoted: m })
+        const buf = Buffer.from(نص)
+        const st = await sticker(buf, false, pack, author)
+        await conn.sendMessage(m.chat, { sticker: st }, { quoted: m })
         await m.react('✔️')
         break
+      }
 
-      case 'تعديل':
-        if (!m.quoted) return conn.reply(m.chat, '❌ رد على ستكر لتعديله', m)
+      // ===== تعديل ستكر ===== //
+      case 'تعديل': {
+        if (!m.quoted) return conn.reply(m.chat, '❌ رد على ستكر لتعديله.', m)
+
         await m.react('🕒')
         const data = await m.quoted.download()
-        const [pack, author] = text.split('|').map(p => p.trim())
-        const exif = await addExif(data, pack || حقوق1, author || حقوق2)
-        await conn.sendMessage(m.chat, { sticker: exif }, { quoted: m })
+        const [p, a] = text.split('|').map(v => v?.trim())
+        const ex = await addExif(data, p || pack, a || author)
+        await conn.sendMessage(m.chat, { sticker: ex }, { quoted: m })
         await m.react('✔️')
         break
+      }
     }
   } catch (e) {
     await m.react('✖️')
-    conn.reply(m.chat, `⚠︎ حدث خطأ: ${e.message}`, m)
+    conn.reply(m.chat, `⚠︎ حدث خطأ:\n${e.message}`, m)
   }
 }
 
-handler.command = ['ثابت', 'ستكري', 'تعديل']
-handler.tags = ['ستكر']
-handler.help = ['ثابت', 'ستكري', 'تعديل']
+const delay = ms => new Promise(res => setTimeout(res, ms))
+
+handler.command = ['ستكري', 'ثابت', 'تعديل']
+handler.tags = ['sticker']
+handler.help = ['ستكري *بحث*', 'ثابت', 'تعديل']
 
 export default handler
