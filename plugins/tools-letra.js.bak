@@ -89,7 +89,7 @@ async function handler(m, { conn, text = '', command = '' }) {
     }
 
     // أمر: style أو letra => تغيير خط افتراضي
-    if (['style', 'رقم'].includes(cmd)) {
+    if (['style', 'letra'].includes(cmd)) {
       if (!text) return conn.reply(m.chat, '❀ من فضلك، أدخل رقم الخط الذي تريده. مثال: رقم 3', m)
       const num = parseInt(text.trim())
       if (!num || !yStr[num]) return conn.reply(m.chat, `❀ الرقم غير صالح. اختر من 1 إلى ${Object.keys(yStr).length}.`, m)

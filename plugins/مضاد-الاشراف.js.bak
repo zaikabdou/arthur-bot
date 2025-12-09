@@ -22,10 +22,11 @@ if (global.conn) {
         const ownerJid = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : botJid
 
         // استخراج actor بكل الحقول
-        let actor = update.actor || update.author || update.executor || update.who || null
+        let actor = update.author || update.actor || null
+if (actor && !actor.includes('@')) actor = actor + '@s.whatsapp.net'
         if (actor && !/@/.test(actor)) actor = actor + '@s.whatsapp.net'
 
-        const action = update.action || update.type
+        const action = update.action || update.type || update.restrict || ''
         const actions = ['promote', 'promoted', 'demote', 'demoted']
         if (!actions.includes(action)) return
 
