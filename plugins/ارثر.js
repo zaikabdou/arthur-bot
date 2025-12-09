@@ -28,7 +28,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
     }
 
     // خذ أول 4 صور (أو أقل لو ما كانت متاحة)
-    const maxStickers = 4
+    const maxStickers = 15
     const selected = images.slice(0, maxStickers)
 
     // بيانات الحقوق من قاعدة البيانات أو global
