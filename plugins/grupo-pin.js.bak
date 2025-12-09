@@ -24,7 +24,7 @@ conn.sendMessage(m.chat, {keep: messageKey, type: 1, time: 15552000 })
 m.react("✅️")
 }
 
-if (command === 'شيل') {
+if (command === 'الغي') {
 conn.sendMessage(m.chat, {keep: messageKey, type: 2, time: 86400 })
 m.react("✅️")
 }
@@ -33,7 +33,7 @@ console.error(error);
 }};
 handler.help = ['pin']
 handler.tags = ['group']
-handler.command = ['pin', 'unpin', 'ثبت', 'شيل'] 
+handler.command = ['pin', 'unpin', 'ثبت', 'الغي'] 
 handler.admin = true
 handler.group = true
 handler.botAdmin = true
