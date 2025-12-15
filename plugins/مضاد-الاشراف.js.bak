@@ -1,0 +1,92 @@
+// ===[ مضاد الإشراف – النسخة المجرة 2026 – لا عيوب ولا فشل ]===
+// ملف: plugins/antiadmin.js
+// يشتغل مع: .فتح مضاد_الإشراف   |   .قفل مضاد_الإشراف
+
+// استيراد ضروري
+import { areJidsSameUser } from '@whiskeysockets/baileys'
+
+// تسجيل الحدث مستقل (ما يعتمد على before)
+if (global.conn) {
+  if (!global.conn._antiAdminListener) {
+    global.conn._antiAdminListener = true
+    global.conn.ev.on('group-participants.update', async (update) => {
+      try {
+        const chat = global.db.data.chats[update.id] || {}
+        if (!chat.antiAdmin) return
+
+        const metadata = await global.conn.groupMetadata(update.id)
+        const botJid = global.conn.user.jid
+        const isBotAdmin = metadata.participants.some(p => areJidsSameUser(p.id, botJid) && p.admin)
+        if (!isBotAdmin) return
+
+        const ownerJid = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : botJid
+
+        // استخراج actor بكل الحقول
+        let actor = update.author || update.actor || null
+if (actor && !actor.includes('@')) actor = actor + '@s.whatsapp.net'
+        if (actor && !/@/.test(actor)) actor = actor + '@s.whatsapp.net'
+
+        const action = update.action || update.type || update.restrict || ''
+        const actions = ['promote', 'promoted', 'demote', 'demoted']
+        if (!actions.includes(action)) return
+
+        const isDemote = action.includes('demote') || action.includes('demoted')
+        if (!isDemote) return // لو تبغى حماية promote أضف هنا
+
+        const victims = update.participants || []
+        if (!Array.isArray(victims) || victims.length === 0) return
+
+        for (const victim of victims) {
+          if (areJidsSameUser(victim, botJid) || areJidsSameUser(victim, ownerJid)) continue
+
+          // إعادة الترقية
+          try {
+            await global.conn.groupParticipantsUpdate(update.id, [victim], 'promote')
+            const msg = `
+❍━═━═━═━═━═━═━❍
+❍⇇ تم سحب إشراف من عضو
+❍
+❍⇇ العضو ↜ @${victim.split('@')[0]}
+❍⇇ تمت إعادة الإشراف تلقائيًا
+❍⇇ مضاد الإشراف مفعّل
+❍━═━═━═━═━═━═━❍
+            `.trim()
+            await global.conn.sendMessage(update.id, { text: msg, mentions: [victim] })
+          } catch (e) {
+            console.error('فشل إعادة الترقية:', { group: update.id, victim, error: e })
+            await global.conn.sendMessage(update.id, {
+              text: 'فشل إعادة الإشراف – تأكد إن البوت أدمن'
+            }).catch(() => {})
+            continue
+          }
+
+          // طرد اللي سوى السحب
+          if (actor && !areJidsSameUser(actor, botJid) && !areJidsSameUser(actor, ownerJid) && !areJidsSameUser(actor, victim)) {
+            try {
+              await global.conn.groupParticipantsUpdate(update.id, [actor], 'remove')
+              await global.conn.sendMessage(update.id, {
+                text: `
+❍━═━═━═━═━═━═━❍
+❍⇇ تم طرد مشرف متمرد
+❍
+❍⇇ المتمرد ↜ @${actor.split('@')[0]}
+❍⇇ السبب ↜ سحب إشراف
+❍⇇ الإشراف محمي بالكامل
+❍━═━═━═━═━═━═━❍
+                `.trim(),
+                mentions: [actor]
+              })
+            } catch (e) {
+              console.error('فشل طرد المتمرد:', { group: update.id, actor, error: e })
+              await global.conn.sendMessage(update.id, {
+                text: 'فشل طرد المتمرد – تأكد إن البوت أدمن'
+              }).catch(() => {})
+            }
+          }
+        }
+      } catch (e) {
+        console.error('مضاد الإشراف – خطأ عام:', { update, error: e })
+      }
+    })
+  }
+}
