@@ -2,6 +2,8 @@
 https://github.com/deylin-eliac
 no quites créditos y no modifiques el código*/
 
+
+
 import fetch from 'node-fetch'
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
@@ -11,12 +13,7 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
   let hasImage = /^image\/(jpe?g|png)$/.test(mime)
 
   if (!text && !hasImage) {
-    return conn.reply(
-      m.chat,
-      `${emoji} أرسل أو ردّ على صورة مع سؤال، أو اكتب وصفًا لتوليد صورة.\n\nمثال:\n${usedPrefix + command} ماذا ترى في هذه الصورة؟\n${usedPrefix + command} أنشئ صورة لثعلب على القمر`,
-      m,
-      rcanal
-    )
+    return conn.reply(m.chat, `${emoji} Envía o responde a una imagen con una pregunta, o escribe un prompt para generar una imagen.\n\nEjemplo:\n${usedPrefix + command} ¿Qué ves en esta imagen?\n${usedPrefix + command} Genera una imagen de un zorro en la luna`, m, rcanal)
   }
 
   try {
@@ -52,21 +49,15 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
 
     const data = await res.json()
 
-    if (data?.image && data?.from === 'image-generator') {
-      return await conn.sendFile(
-        m.chat,
-        data.image,
-        'imagen.jpg',
-        `أكيد ✨ هذه الصورة التي طلبتها\n\n> Gemini (IA)`,
-        m,
-        rcanal
-      )
-    }
 
-    await m.react('🪄')
+    if (data?.image && data?.from === 'image-generator') {
+      return await conn.sendFile(m.chat, data.image, 'imagen.jpg', ` Claro aquí tienes tu imagen espero te guste 😸 \n\n\n> Gemini (IA) ✨`, m, rcanal)
+    }
+await m.react('🪄')
+
 
     const respuesta = data?.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!respuesta) throw '❌ لم يتم استلام رد صالح من الذكاء الاصطناعي.'
+    if (!respuesta) throw '❌ No se recibió respuesta válida de la IA.'
 
     conn.reply(m.chat, respuesta.trim(), m, rcanal)
     await m.react('🌟')
@@ -74,13 +65,13 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
   } catch (e) {
     console.error('[ERROR GEMINI]', e)
     await m.react('⚠️')
-    await conn.reply(m.chat, '⚠️ حدث خطأ أثناء معالجة الصورة أو السؤال.', m, rcanal)
+    await conn.reply(m.chat, '⚠️ Ocurrió un error procesando la imagen o pregunta.', m, rcanal)
   }
 }
 
-handler.command = ['جيميني']
-handler.tags = ['ia']
-handler.help = ['جيميني']
+handler.command = ['gemini', 'جيميني'];
+handler.tags = ['ia'];
+handler.help = ['gemini'];
 handler.group = false
 
 export default handler

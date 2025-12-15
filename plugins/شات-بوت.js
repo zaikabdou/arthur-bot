@@ -52,11 +52,11 @@ handler.all = async function (m) {
     conn.reply(m.chat, `*بنوري انا 🫠🐦*`, fake);
   }
 
-  if (/^في اي|في ايه$/i.test(m.text)) { 
+  if (/^ايش|شو في$/i.test(m.text)) { 
     conn.reply(m.chat, `*انا معرفش حاجه🙂*`, fake);
   }
 
-  if (/^تست$/i.test(m.text)) { 
+  if (/^تستو$/i.test(m.text)) { 
     conn.reply(m.chat, `*𝙰𝚁𝚃_𝙱𝙾𝚃 فـي الـخدمه 🫡🍀*`, fake);
   }
 
@@ -104,7 +104,7 @@ handler.all = async function (m) {
     conn.reply(m.chat, `*اهلـيـن كـيـف حـالـك 🐤🌹*`, fake);
   }
 
-  if (/يا خرا|دانت خرا|خرا عليك$/i.test(m.text)) { 
+  if (/يا خرا|خرا|خرا عليك$/i.test(m.text)) { 
     conn.reply(m.chat, `*يعم لما يبقا عندك  رجولة الاول تعالا اتكلم😂*`, fake);
   }
   return !0;
