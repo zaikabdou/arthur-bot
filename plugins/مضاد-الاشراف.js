@@ -2,47 +2,62 @@
 // ملف: plugins/antiadmin.js
 // يشتغل مع: .فتح مضاد_الإشراف   |   .قفل مضاد_الإشراف
 
-// استيراد ضروري
 import { areJidsSameUser } from '@whiskeysockets/baileys'
 
-// تسجيل الحدث مستقل (ما يعتمد على before)
 if (global.conn) {
   if (!global.conn._antiAdminListener) {
     global.conn._antiAdminListener = true
+
     global.conn.ev.on('group-participants.update', async (update) => {
       try {
-        const chat = global.db.data.chats[update.id] || {}
-        if (!chat.antiAdmin) return
+        const chatId = update.id || update.jid || update.groupId
+        if (!chatId) return
 
-        const metadata = await global.conn.groupMetadata(update.id)
-        const botJid = global.conn.user.jid
-        const isBotAdmin = metadata.participants.some(p => areJidsSameUser(p.id, botJid) && p.admin)
-        if (!isBotAdmin) return
+        const chat = (global.db && global.db.data && global.db.data.chats && global.db.data.chats[chatId]) ? global.db.data.chats[chatId] : {}
+        if (!chat || !chat.antiAdmin) return // التأكد إن الحماية مفعلة للمجموعة
 
-        const ownerJid = global.owner?.[0]?.[0] ? global.owner[0][0] + '@s.whatsapp.net' : botJid
+        // تطبيع actor (اللي سوّى التغيير)
+        let actor = update.actor || update.author || null
+        if (actor && !/@/.test(actor)) actor = `${actor}@s.whatsapp.net`
 
-        // استخراج actor بكل الحقول
-        let actor = update.author || update.actor || null
-if (actor && !actor.includes('@')) actor = actor + '@s.whatsapp.net'
-        if (actor && !/@/.test(actor)) actor = actor + '@s.whatsapp.net'
+        // استخراج الضحايا (participants) بشكل آمن وموثوق
+        let victims = []
+        if (Array.isArray(update.participants) && update.participants.length > 0) {
+          victims = update.participants.map(v => (/@/.test(v) ? v : `${v}@s.whatsapp.net`))
+        } else if (Array.isArray(update.users) && update.users.length > 0) {
+          victims = update.users.map(v => (/@/.test(v) ? v : `${v}@s.whatsapp.net`))
+        } else if (update.jid) {
+          victims = [/@/.test(update.jid) ? update.jid : `${update.jid}@s.whatsapp.net`]
+        }
 
-        const action = update.action || update.type || update.restrict || ''
-        const actions = ['promote', 'promoted', 'demote', 'demoted']
-        if (!actions.includes(action)) return
+        if (!victims || victims.length === 0) return
 
-        const isDemote = action.includes('demote') || action.includes('demoted')
-        if (!isDemote) return // لو تبغى حماية promote أضف هنا
+        // نوع الفعل: نركز على demote (سحب إشراف)
+        const action = (update.action || update.type || update.restrict || '').toString().toLowerCase()
+        if (!/demote|demoted/.test(action)) return // لو تبغى تحمي promote إمسح السطر أو عدّله
 
-        const victims = update.participants || update.users || update.jid ? [update.jid] : []
-        if (!Array.isArray(victims) || victims.length === 0) return
+        // تأكد إن البوت أدمن فعلاً
+        const metadata = await global.conn.groupMetadata(chatId).catch(() => null)
+        if (!metadata || !Array.isArray(metadata.participants)) return
+        const botJid = global.conn.user && global.conn.user.jid ? global.conn.user.jid : null
+        const botIsAdmin = metadata.participants.some(p => areJidsSameUser(p.id, botJid) && (p.admin || p.isAdmin || p.isSuperAdmin))
+        if (!botIsAdmin) return // ما نقدر نتصرف إذا البوت ليس أدمن
 
+        // استثناءات: الأونر + رقمك (المطور/صاحب الحق) + البوت نفسه
+        const ownerJid = (global.owner && Array.isArray(global.owner) && global.owner[0] && global.owner[0][0]) ? `${global.owner[0][0]}@s.whatsapp.net` : botJid
+        const exemptJid = '213773231685@s.whatsapp.net' // **الرقم اللي طلبته محفوظ كمستثنى**
+        
         for (const victim of victims) {
-          if (areJidsSameUser(victim, botJid) || areJidsSameUser(victim, ownerJid)) continue
-
-          // إعادة الترقية
           try {
-            await global.conn.groupParticipantsUpdate(update.id, [victim], 'promote')
-            const msg = `
+            // لا نتدخل لو الضحية هو البوت أو الأونر أو المستثنى
+            if (areJidsSameUser(victim, botJid)) continue
+            if (ownerJid && areJidsSameUser(victim, ownerJid)) continue
+            if (areJidsSameUser(victim, exemptJid)) continue
+
+            // نعيد الإشراف للضحية
+            try {
+              await global.conn.groupParticipantsUpdate(chatId, [victim], 'promote')
+              const msg = `
 ❍━═━═━═━═━═━═━❍
 ❍⇇ تم سحب إشراف من عضو
 ❍
@@ -50,22 +65,18 @@ if (actor && !actor.includes('@')) actor = actor + '@s.whatsapp.net'
 ❍⇇ تمت إعادة الإشراف تلقائيًا
 ❍⇇ مضاد الإشراف مفعّل
 ❍━═━═━═━═━═━═━❍
-            `.trim()
-            await global.conn.sendMessage(update.id, { text: msg, mentions: [victim] })
-          } catch (e) {
-            console.error('فشل إعادة الترقية:', { group: update.id, victim, error: e })
-            await global.conn.sendMessage(update.id, {
-              text: 'فشل إعادة الإشراف – تأكد إن البوت أدمن'
-            }).catch(() => {})
-            continue
-          }
+              `.trim()
+              await global.conn.sendMessage(chatId, { text: msg, mentions: [victim] }).catch(() => {})
+            } catch (e) {
+              console.error('مضاد الإشراف: فشل إعادة الترقية', { chatId, victim, error: e?.message || e })
+              await global.conn.sendMessage(chatId, { text: 'فشل إعادة الإشراف – تأكد إن البوت أدمن' }).catch(() => {})
+            }
 
-          // طرد اللي سوى السحب
-          if (actor && !areJidsSameUser(actor, botJid) && !areJidsSameUser(actor, ownerJid) && !areJidsSameUser(actor, victim)) {
-            try {
-              await global.conn.groupParticipantsUpdate(update.id, [actor], 'remove')
-              await global.conn.sendMessage(update.id, {
-                text: `
+            // الآن نطرد من سوّى السحب (actor) إذا كان غير مستثنى
+            if (actor && !areJidsSameUser(actor, botJid) && !areJidsSameUser(actor, ownerJid) && !areJidsSameUser(actor, exemptJid) && !areJidsSameUser(actor, victim)) {
+              try {
+                await global.conn.groupParticipantsUpdate(chatId, [actor], 'remove')
+                const kickMsg = `
 ❍━═━═━═━═━═━═━❍
 ❍⇇ تم طرد مشرف متمرد
 ❍
@@ -73,19 +84,20 @@ if (actor && !actor.includes('@')) actor = actor + '@s.whatsapp.net'
 ❍⇇ السبب ↜ سحب إشراف
 ❍⇇ الإشراف محمي بالكامل
 ❍━═━═━═━═━═━═━❍
-                `.trim(),
-                mentions: [actor]
-              })
-            } catch (e) {
-              console.error('فشل طرد المتمرد:', { group: update.id, actor, error: e })
-              await global.conn.sendMessage(update.id, {
-                text: 'فشل طرد المتمرد – تأكد إن البوت أدمن'
-              }).catch(() => {})
+                `.trim()
+                await global.conn.sendMessage(chatId, { text: kickMsg, mentions: [actor] }).catch(() => {})
+              } catch (e) {
+                console.error('مضاد الإشراف: فشل طرد المتمرد', { chatId, actor, error: e?.message || e })
+                await global.conn.sendMessage(chatId, { text: 'فشل طرد المتمرد – تأكد إن البوت أدمن' }).catch(() => {})
+              }
             }
+          } catch (innerErr) {
+            console.error('مضاد الإشراف – خطأ داخلي عند المعالجة:', { chatId, victim, error: innerErr?.message || innerErr })
           }
         }
-      } catch (e) {
-        console.error('مضاد الإشراف – خطأ عام:', { update, error: e })
+
+      } catch (err) {
+        console.error('مضاد الإشراف – خطأ عام:', { update, error: err?.message || err })
       }
     })
   }
