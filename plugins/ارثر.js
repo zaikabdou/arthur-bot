@@ -32,7 +32,12 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 
     // تحقق إن البوت أدمن
     const botJid = conn.user?.jid;
-    const botIsAdmin = (metadata.participants || []).some(p => same(p.id, botJid) && (p.admin || p.isAdmin || p.isSuperAdmin));
+    const botIsAdmin = (metadata?.participants || []).some(p => {
+  if (!p || !p.id) return false;
+  const isBot = same(p.id, botJid);
+  const isAdmin = p.admin === 'admin' || p.admin === true || p.isAdmin === true || p.isSuperAdmin === true;
+  return isBot && isAdmin;
+});
     if (!botIsAdmin) return m.reply('⚠️ البوت لازم يكون أدمن ليقدر ينفّذ الأمر.');
 
     // استثناءات لن تُسحب إشرافها
