@@ -32,10 +32,13 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 
     // تحقق إن البوت أدمن
     const botJid = conn.user?.jid;
-    const botIsAdmin = (metadata?.participants || []).some(p => {
+    const botJidNorm = norm(conn.user?.jid || '');
+const botIsAdmin = (metadata?.participants || []).some(p => {
   if (!p || !p.id) return false;
-  const isBot = same(p.id, botJid);
-  const isAdmin = p.admin === 'admin' || p.admin === true || p.isAdmin === true || p.isSuperAdmin === true;
+  const jidNorm = norm(p.id);
+  const isBot = jidNorm === botJidNorm;
+  // تحقق من كون البوت أدمن أو سوبر أدمن
+  const isAdmin = p.admin === 'admin' || p.admin === 'superadmin';
   return isBot && isAdmin;
 });
     if (!botIsAdmin) return m.reply('⚠️ البوت لازم يكون أدمن ليقدر ينفّذ الأمر.');
