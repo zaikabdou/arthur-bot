@@ -82,7 +82,7 @@ const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
       if (fetched) executorName = fetched;
     } catch (e) {}
 
-    const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : 'ART_BOT';
+    const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : '𝙰𝚁𝚃_𝙱𝙾𝚃';
 
     const dt = new Date();
     const dateStr = dt.toLocaleDateString('en-GB', { timeZone: 'Asia/Damascus' }).replace(/\//g, '/');
@@ -91,29 +91,19 @@ const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
     const userId = m.sender;
     const packstickers = (global.db && global.db.data && global.db.data.users && global.db.data.users[userId]) ? global.db.data.users[userId] : {};
     const texto1 = packstickers.text1 || (global.packsticker || '');
-    const texto2 = packstickers.text2 || (global.packsticker2 || '');
-
-const decorator1 = ['ᥲ','ᑲ','ᥴ','ძ','ᥱ','𝖿','g','һ','і','ȷ','k','ᥣ','m','ᥒ','᥆','⍴','𝗊','r','s','𝗍','ᥙ','᥎','ᥕ','᥊','ᥡ','z'];
-const decorator2 = ['𝚊','𝚋','𝚌','𝚍','𝚎','𝚏','𝚐','𝚑','𝚒','𝚓','𝚔','𝚕','𝚖','𝚗','𝚘','𝚙','𝚚','𝚛','𝚜','𝚝','𝚞','𝚟','𝚠','𝚡','𝚢','𝚣'];
-
-function decorate(str, decor) {
-  return str.split('').map((c,i)=> decor[i % decor.length]+c).join('');
-}
-
-const stickerLikeDescriptionLines = [
-  '٪. ─═࿇═─ ۪۪۪۪۪۪۪۪۪۪۪۪ ۫',
-  '',
-  `*ᰔᩚ ${decorate('USER', decorator1)}: ${executorName.toUpperCase()}*`,
-  `*✿ ${decorate('BOT', decorator1)}: ${botName}*`,
-  `*✦ ${decorate('DATE', decorator1)}: ${dateStr}*`,
-  `*Σ ${decorate('TIME', decorator1)}: ${timeStr}*`,
-  '',
-  ...(texto1 ? [decorate(texto1, decorator2)] : []),
-  ...(texto2 ? [decorate(texto2, decorator2)] : []),
-  '',
-  '╰━•°•━━━━•°•━╯',
-  '*© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*'
-];
+    const stickerLikeDescriptionLines = [
+      '٪. ─═࿇═─ ۪۪۪۪۪۪۪۪۪۪۪۪ ۫',
+      '',
+      `*ᰔᩚ 𝚞𝚜𝚎𝚛: ${executorName.toString().toUpperCase()}.*`,
+      `*✿ ᑲ᥆𝗍: ${botName}.*`,
+      `*✦ 𝚝𝚒𝚖𝚎: ${dateStr}.*`,
+      `*Σ 𝚑𝚘𝚞𝚛: ${timeStr}.*`,
+      '',
+      ...(texto1 ? [texto1] : []),
+      '',
+      '╰━•°•━━━━•°•━╯',
+      '*© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*'
+    ];
 
     let description = stickerLikeDescriptionLines.join('\n');
 
