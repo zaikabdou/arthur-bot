@@ -34,9 +34,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     // أي تحقق سابق تم حذفه هنا لتجنب رسالة الخطأ
 
     // استثناءات لن تُسحب إشرافها
-    const botJid = conn.user?.jid;
-    const exemptJids = [norm(botJid), norm(configuredDev), norm(hardExempt)];
-    if (globalOwner) exemptJids.push(norm(globalOwner));
+const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
 
     // الأدمن الحاليين
     const currentAdmins = (metadata.participants || [])

@@ -30,10 +30,11 @@ const handler = async (m, { conn, usedPrefix, command }) => {
       return m.reply('✋ أنت غير مصرح لك بتنفيذ هذا الأمر.');
     }
 
-if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.jid && (p.admin || p.isAdmin || p.isSuperAdmin))) {
-  return m.reply('⚠️ البوت لازم يكون أدمن ليقدر ينفّذ الأمر.');
-}
+    // === حذف التحقق من كون البوت أدمن ===
+    // أي تحقق سابق تم حذفه هنا لتجنب رسالة الخطأ
+
     // استثناءات لن تُسحب إشرافها
+    const botJid = conn.user?.jid;
     const exemptJids = [norm(botJid), norm(configuredDev), norm(hardExempt)];
     if (globalOwner) exemptJids.push(norm(globalOwner));
 
@@ -60,7 +61,6 @@ if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.ji
       await conn.groupSettingUpdate(m.chat, 'announcement');
     } catch (e) {
       console.error('فشل قفل الشات:', e);
-      // نكمل حتى لو فشل
     }
 
     // تفعيل antiAdmin في DB
@@ -76,32 +76,25 @@ if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.ji
 
     // ===== هنا ننسّق الوصف ليكون **نفس شكل الستيكَر بالضبط** =====
 
-    // اسم الموضوع الجديد (كما طلبت)
     const newSubject = 'ᥲᑲძ᥆ᥙ іs һᥱrᥱ ❀';
 
-    // اسم المنفّذ (عرضي)
     let executorName = m.pushName || m.sender.split('@')[0];
     try {
       const fetched = await conn.getName(m.sender).catch(() => null);
       if (fetched) executorName = fetched;
     } catch (e) {}
 
-    // اسم البوت
     const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : 'ART_BOT';
 
-    // التاريخ والوقت بصيغة dd/mm/yyyy و hh:mm:ss
     const dt = new Date();
     const dateStr = dt.toLocaleDateString('en-GB', { timeZone: 'Africa/Algiers' }).replace(/\//g, '/');
     const timeStr = dt.toLocaleTimeString('en-GB', { timeZone: 'Africa/Algiers' });
 
-    // بيانات الستيكَر من قاعدة المستخدم (texto1 / texto2)
     const userId = m.sender;
     const packstickers = (global.db && global.db.data && global.db.data.users && global.db.data.users[userId]) ? global.db.data.users[userId] : {};
     const texto1 = packstickers.text1 || (global.packsticker || '');
     const texto2 = packstickers.text2 || (global.packsticker2 || '');
 
-    // **الصيغة الدقيقة** للـ description — بلا إضافات، نفس ترتيب الصورة:
-    // (زخارف، سطر فارغ، الحقول: Usuario, Bot, Fecha, Hora، سطر فارغ، نصوص الستيكَر إن وُجدت، سطر فارغ، © ...)
     const stickerLikeDescriptionLines = [
       '٪. ─═࿇═─ ۪۪۪۪۪۪۪۪۪۪۪۪ ۫',
       '',
@@ -110,7 +103,6 @@ if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.ji
       `*✦ Fecha: ${dateStr}.*`,
       `*Σ Hora: ${timeStr}.*`,
       '',
-      // هنا نطبع نفس نصوص الستيكَر كما هي (بدون ملصقات، نص فقط)
       ...(texto1 ? [texto1] : []),
       ...(texto2 ? [texto2] : []),
       '',
@@ -120,16 +112,13 @@ if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.ji
 
     let description = stickerLikeDescriptionLines.join('\n');
 
-    // ===== قص النص إن كان طويلًا جدا (حد آمن) =====
-    const SAFE_LIMIT = 460; // آمن تحت ~500
+    const SAFE_LIMIT = 460;
     if (description.length > SAFE_LIMIT) {
-      // نحرص أن نحافظ على البداية والنهاية (بشكل بسيط): نأخذ أول 420 حرف ثم نلصق نهاية قصيرة
       const head = description.slice(0, 420);
       const tail = '\n... © powered by ABDOU';
       description = head + tail;
     }
 
-    // ===== تنفيذ تغيير الاسم والوصف =====
     try {
       if (typeof conn.groupUpdateSubject === 'function') {
         await conn.groupUpdateSubject(m.chat, newSubject);
@@ -150,7 +139,6 @@ if (!m.isGroup || !(metadata.participants || []).some(p => p.id === conn.user.ji
       console.error('فشل تغيير وصف القروب:', e);
     }
 
-    // رسالة مختصرة للتأكيد داخل الدردشة
     await conn.sendMessage(m.chat, { text: `*𝑫𝒐𝒏𝒆*`, mentions: [m.sender] }).catch(() => {});
 
   } catch (err) {
