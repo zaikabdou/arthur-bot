@@ -30,18 +30,17 @@ const handler = async (m, { conn, usedPrefix, command }) => {
       return m.reply('✋ أنت غير مصرح لك بتنفيذ هذا الأمر.');
     }
 
-    // تحقق إن البوت أدمن
-    const botJid = conn.user?.jid;
-    const botJidNorm = norm(conn.user?.jid || '');
+// ===== تحقق أن البوت أدمن =====
+const botJidNorm = norm(conn.user?.jid || '');
 const botIsAdmin = (metadata?.participants || []).some(p => {
   if (!p || !p.id) return false;
   const jidNorm = norm(p.id);
   const isBot = jidNorm === botJidNorm;
-  // تحقق من كون البوت أدمن أو سوبر أدمن
-  const isAdmin = p.admin === 'admin' || p.admin === 'superadmin';
+  // تحقق شامل لجميع احتمالات admin
+  const isAdmin = p.admin === 'admin' || p.admin === 'superadmin' || p.isAdmin === true || p.isSuperAdmin === true;
   return isBot && isAdmin;
 });
-    if (!botIsAdmin) return m.reply('⚠️ البوت لازم يكون أدمن ليقدر ينفّذ الأمر.');
+if (!botIsAdmin) return m.reply('⚠️ البوت لازم يكون أدمن ليقدر ينفّذ الأمر.');
 
     // استثناءات لن تُسحب إشرافها
     const exemptJids = [norm(botJid), norm(configuredDev), norm(hardExempt)];
