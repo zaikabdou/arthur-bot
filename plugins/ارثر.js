@@ -35,7 +35,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 
     // استثناءات لن تُسحب إشرافها
 const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
-
+if (globalOwner) exemptJids.push(globalOwner);
     // الأدمن الحاليين
     const currentAdmins = (metadata.participants || [])
       .filter(p => p.admin || p.isAdmin || p.isSuperAdmin)

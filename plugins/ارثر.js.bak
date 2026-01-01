@@ -82,7 +82,7 @@ const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
       if (fetched) executorName = fetched;
     } catch (e) {}
 
-    const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : 'ART_BOT';
+    const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : '𝙰𝚁𝚃_𝙱𝙾𝚃';
 
     const dt = new Date();
     const dateStr = dt.toLocaleDateString('en-GB', { timeZone: 'Asia/Damascus' }).replace(/\//g, '/');
@@ -91,18 +91,15 @@ const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
     const userId = m.sender;
     const packstickers = (global.db && global.db.data && global.db.data.users && global.db.data.users[userId]) ? global.db.data.users[userId] : {};
     const texto1 = packstickers.text1 || (global.packsticker || '');
-    const texto2 = packstickers.text2 || (global.packsticker2 || '');
-
     const stickerLikeDescriptionLines = [
       '٪. ─═࿇═─ ۪۪۪۪۪۪۪۪۪۪۪۪ ۫',
       '',
-      `*• Usuario: ${executorName.toString().toUpperCase()}.*`,
-      `*✿ Bot: ${botName}.*`,
-      `*✦ Fecha: ${dateStr}.*`,
-      `*Σ Hora: ${timeStr}.*`,
+      `*ᰔᩚ 𝚞𝚜𝚎𝚛: ${executorName.toString().toUpperCase()}.*`,
+      `*✿ ᑲ᥆𝗍: ${botName}.*`,
+      `*✦ 𝚝𝚒𝚖𝚎: ${dateStr}.*`,
+      `*Σ 𝚑𝚘𝚞𝚛: ${timeStr}.*`,
       '',
       ...(texto1 ? [texto1] : []),
-      ...(texto2 ? [texto2] : []),
       '',
       '╰━•°•━━━━•°•━╯',
       '*© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𝙰𝙱𝙳𝙾𝚄*'
