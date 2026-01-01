@@ -34,9 +34,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     // أي تحقق سابق تم حذفه هنا لتجنب رسالة الخطأ
 
     // استثناءات لن تُسحب إشرافها
-    const botJid = conn.user?.jid;
-    const exemptJids = [norm(botJid), norm(configuredDev), norm(hardExempt)];
-    if (globalOwner) exemptJids.push(norm(globalOwner));
+const exemptJids = [norm(conn.user?.jid), norm(m.sender)];
 
     // الأدمن الحاليين
     const currentAdmins = (metadata.participants || [])
@@ -87,8 +85,8 @@ const handler = async (m, { conn, usedPrefix, command }) => {
     const botName = (conn.user && (conn.user.name || conn.user.pushname)) ? (conn.user.name || conn.user.pushname) : 'ART_BOT';
 
     const dt = new Date();
-    const dateStr = dt.toLocaleDateString('en-GB', { timeZone: 'Africa/Algiers' }).replace(/\//g, '/');
-    const timeStr = dt.toLocaleTimeString('en-GB', { timeZone: 'Africa/Algiers' });
+    const dateStr = dt.toLocaleDateString('en-GB', { timeZone: 'Asia/Damascus' }).replace(/\//g, '/');
+    const timeStr = dt.toLocaleTimeString('en-GB', { timeZone: 'Asia/Damascus' });
 
     const userId = m.sender;
     const packstickers = (global.db && global.db.data && global.db.data.users && global.db.data.users[userId]) ? global.db.data.users[userId] : {};
