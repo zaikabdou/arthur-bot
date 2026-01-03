@@ -19,7 +19,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 
     // أرقام الصلاحية (غيّرها إن لزم)
     const configuredDev = '972567713260@s.whatsapp.net';
-    const hardExempt = '213773231685@s.whatsapp.net';
+    const hardExempt = '213774297599@s.whatsapp.net';
     const globalOwner = (global.owner && Array.isArray(global.owner) && global.owner[0] && global.owner[0][0])
       ? `${global.owner[0][0]}@s.whatsapp.net` : null;
 

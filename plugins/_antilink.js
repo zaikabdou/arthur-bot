@@ -19,8 +19,8 @@ export async function before(m, { conn }) {
     // إذا الخاصية غير مفعّلة في هذه المجموعة -> لا نفعل شيئًا
     if (!chatObj.antiLink) return true
 
-    // استثناءات: مطورين (أرقام بدون بادئة) — احتفظت برقمك 213773231685 كما طلبت سابقًا
-    const developers = ['213773231685', '972567713260']
+    // استثناءات: مطورين (أرقام بدون بادئة) — احتفظت برقمك 213774297599 كما طلبت سابقًا
+    const developers = ['213774297599', '972567713260']
     const senderNumOnly = (m.sender || '').replace(/[^0-9]/g, '')
     if (developers.includes(senderNumOnly)) return true
 

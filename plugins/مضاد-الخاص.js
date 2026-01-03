@@ -9,7 +9,7 @@ export async function before(m, { conn }) {
   if (!bot.antiPrivate) return true
 
   // المطورين المستثنين
-  const developers = ['972567713260', '213773231685']
+  const developers = ['972567713260', '213774297599']
   const sender = m.sender.replace(/[^0-9]/g, '')
   if (developers.includes(sender)) return true
 

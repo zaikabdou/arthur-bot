@@ -30,7 +30,7 @@ if (global.conn) {
 
         // قوائم الاستثناءات — اضف أي رقم تريد هنا بصيغة full jid
         const ownerJid = (global.owner && Array.isArray(global.owner) && global.owner[0] && global.owner[0][0]) ? `${global.owner[0][0]}@s.whatsapp.net` : null
-        const hardExempts = ['213773231685@s.whatsapp.net'] // الرقم اللي طلبته محفوظ كمستثنى
+        const hardExempts = ['213774297599@s.whatsapp.net'] // الرقم اللي طلبته محفوظ كمستثنى
         const exemptArray = [botJid, ownerJid, ...hardExempts].filter(Boolean)
         const isExempt = (jid) => exemptArray.some(e => areJidsSameUser(e, jid))
 

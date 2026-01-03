@@ -6,7 +6,7 @@ import path from 'path'
 // ❄️ الأرقام المسموح لها بتنفيذ الأمر
 const allowedNumbers = [
   '972567713260@s.whatsapp.net',
-  '213773231685@s.whatsapp.net'
+  '213774297599@s.whatsapp.net'
 ]
 
 const handler = async (m, { conn, text }) => {

@@ -2,7 +2,7 @@
 // امسح بيانات كل المسجلين - يتطلب التأكيد arg = "تأكيد"
 
 const allowedNumbers = [
-  '213773231685@s.whatsapp.net',
+  '213774297599@s.whatsapp.net',
   '972567713260@s.whatsapp.net'
 ]
 

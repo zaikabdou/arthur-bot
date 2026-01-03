@@ -20,7 +20,7 @@ let handler = async (m, { conn }) => {
         name: 'cta_url',
         buttonParamsJson: JSON.stringify({ 
           display_text: '𝙊𝙬𝙣𝙚𝙧 👑', 
-          url: 'https://wa.me/213773231685' 
+          url: 'https://wa.me/213774297599' 
         })
       },
       {
@@ -54,7 +54,7 @@ let handler = async (m, { conn }) => {
   } catch (e) {
     console.error('❌ Error en el comando owner:', e)
     await conn.sendMessage(m.chat, {
-      text: `❌ *Error al cargar la información del creador*\n\n🔗 Contacta directamente: https://wa.me/213773231685\n\n⚠️ *Error:* ${e.message}`
+      text: `❌ *Error al cargar la información del creador*\n\n🔗 Contacta directamente: https://wa.me/213774297599\n\n⚠️ *Error:* ${e.message}`
     }, { quoted: m })
   }
 }

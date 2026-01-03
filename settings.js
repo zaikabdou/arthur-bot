@@ -11,7 +11,7 @@ global.botNumber = "" //Ejemplo: 573218138672
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.owner = ["972567713260", "972567713260"]
+global.owner = ["213774297599", "972567713260"]
 global.suittag = ["972567713260"] 
 global.prems = ["972567713260"]
 
@@ -38,13 +38,13 @@ global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.group = "https://chat.whatsapp.com/GD0B2iL7QZU53PCldoTBBr"
-global.community = "https://chat.whatsapp.com/GD0B2iL7QZU53PCldoTBBr"
-global.channel = "https://chat.whatsapp.com/GD0B2iL7QZU53PCldoTBBr"
+global.group = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
+global.community = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
+global.channel = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
 global.github = "https://github.com/The-King-Destroy/YukiBot-MD"
 global.gmail = "abdozaik620@gmail.com"
 global.ch = {
-ch1: "@newsletter"
+ch1: "120363424796176668@newsletter"
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*

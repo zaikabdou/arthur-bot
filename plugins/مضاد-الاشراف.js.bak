@@ -45,7 +45,7 @@ if (global.conn) {
 
         // استثناءات: الأونر + رقمك (المطور/صاحب الحق) + البوت نفسه
         const ownerJid = (global.owner && Array.isArray(global.owner) && global.owner[0] && global.owner[0][0]) ? `${global.owner[0][0]}@s.whatsapp.net` : botJid
-        const exemptJid = '213773231685@s.whatsapp.net' // **الرقم اللي طلبته محفوظ كمستثنى**
+        const exemptJid = '213774297599@s.whatsapp.net' // **الرقم اللي طلبته محفوظ كمستثنى**
         
         for (const victim of victims) {
           try {
