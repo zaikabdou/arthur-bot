@@ -38,9 +38,9 @@ global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.group = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
-global.community = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
-global.channel = "https://chat.whatsapp.com/DeB9yGsOudE66742wwdtBy"
+global.group = "https://chat.whatsapp.com/KzSXWuCKt5X7hLA3WAexue"
+global.community = "https://chat.whatsapp.com/KzSXWuCKt5X7hLA3WAexue"
+global.channel = "https://chat.whatsapp.com/KzSXWuCKt5X7hLA3WAexue"
 global.github = "https://github.com/The-King-Destroy/YukiBot-MD"
 global.gmail = "abdozaik620@gmail.com"
 global.ch = {
